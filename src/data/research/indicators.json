@@ -1,0 +1,774 @@
+{
+  "meta": {
+    "title": "Health Indicators Research: Phase 1",
+    "preparedBy": "Eman Saleem (Research) for Abdul Rafay",
+    "date": "2026-11-11",
+    "reviewStatus": "draft - sources being verified (re-check vs NASA resources on Nov 13)",
+    "statusColors": {
+      "normal": "green",
+      "warning": "yellow (warning / watch)",
+      "urgent": "red (urgent / contact flight surgeon)"
+    },
+    "howToEvaluate": "For the latest value: if any 'urgent' condition is true (and, when consecutiveDays > 1, it was true for that many days in a row ending today) -> red. Else if all 'normal' conditions are true -> green. Otherwise -> yellow. Never hardcode these numbers in code.",
+    "howOftenNote": "'howOften' is the team's suggested routine for the app, not a NASA schedule.",
+    "disclaimer": "Decision support only, not a medical diagnosis.",
+    "sourceFiles": [
+      "Eman_Research_Phase1_2.pdf"
+    ]
+  },
+  "indicators": [
+    {
+      "id": "heartRate",
+      "name": "Resting heart rate",
+      "unit": "beats/min",
+      "valueType": "number",
+      "text": {
+        "normal": "51 - 90",
+        "warning": "41 - 50 or 91 - 130",
+        "urgent": "40 or less or 131 or more"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": "<=",
+              "value": 40
+            },
+            {
+              "op": ">=",
+              "value": 131
+            }
+          ],
+          "consecutiveDays": 1
+        },
+        "normal": {
+          "all": [
+            {
+              "op": ">=",
+              "value": 51
+            },
+            {
+              "op": "<=",
+              "value": 90
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "NEWS2 bands (score 0 = green, 1-2 = yellow, 3 = red). MedlinePlus normal resting = 60-100.",
+      "whyItMatters": "Weightlessness changes blood circulation and how the heart works.",
+      "sources": [
+        {
+          "name": "Royal College of Physicians: NEWS2 Chart 1",
+          "url": "https://www.rcp.ac.uk/media/alxev00t/news2-chart-1_the-news-scoring-system_0_0.pdf"
+        },
+        {
+          "name": "NASA HRP: Risk of Cardiovascular Adaptations",
+          "url": "https://www.nasa.gov/reference/risk-of-cardiovascular-adaptations/"
+        }
+      ],
+      "measurement": {
+        "equipment": "Heart rate monitor; CSA Bio-Monitor shirt",
+        "whyNeeded": "Microgravity changes how the heart and blood vessels work.",
+        "howToMeasure": "Sit still 5 min after waking. Count pulse at wrist for 30 s and x2, or read the heart rate monitor.",
+        "howOften": "Daily, morning",
+        "source": {
+          "name": "NASA NTRS: Crew Health Care System (CHeCS) report",
+          "url": "https://ntrs.nasa.gov/api/citations/20110011351/downloads/20110011351.pdf"
+        }
+      },
+      "teamChoice": false,
+      "reviewStatus": "draft",
+      "optional": false
+    },
+    {
+      "id": "systolicBP",
+      "name": "Blood pressure - systolic (top number)",
+      "unit": "mmHg",
+      "valueType": "number",
+      "measurementGroup": "bloodPressure",
+      "text": {
+        "normal": "111 - 119",
+        "warning": "91 - 110 or 120 - 180",
+        "urgent": "90 or less or more than 180"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": "<=",
+              "value": 90
+            },
+            {
+              "op": ">",
+              "value": 180
+            }
+          ],
+          "consecutiveDays": 1
+        },
+        "normal": {
+          "all": [
+            {
+              "op": ">=",
+              "value": 111
+            },
+            {
+              "op": "<=",
+              "value": 119
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "Low side: NEWS2 (<=90 = score 3). High side: American Heart Association (120+ elevated, >180 = hypertensive crisis).",
+      "whyItMatters": "After spaceflight the body struggles to hold blood pressure on standing.",
+      "sources": [
+        {
+          "name": "American Heart Association: Understanding Blood Pressure Readings",
+          "url": "https://www.heart.org/bplevels"
+        },
+        {
+          "name": "Royal College of Physicians: NEWS2 Chart 1",
+          "url": "https://www.rcp.ac.uk/media/alxev00t/news2-chart-1_the-news-scoring-system_0_0.pdf"
+        }
+      ],
+      "measurement": {
+        "equipment": "Blood pressure cuff (ISS Medical Diagnostics Pack, CHeCS)",
+        "whyNeeded": "Fluid shifts in space; on return, blood pressure can drop on standing.",
+        "howToMeasure": "Sit, rest 5 min, arm at heart level, cuff on bare upper arm. Take 2 readings 1 min apart and use the average.",
+        "howOften": "Daily, morning",
+        "source": {
+          "name": "NASA NTRS: Crew Health Care System (CHeCS) report",
+          "url": "https://ntrs.nasa.gov/api/citations/20110011351/downloads/20110011351.pdf"
+        }
+      },
+      "teamChoice": false,
+      "reviewStatus": "draft",
+      "optional": false
+    },
+    {
+      "id": "diastolicBP",
+      "name": "Blood pressure - diastolic (bottom number)",
+      "unit": "mmHg",
+      "valueType": "number",
+      "measurementGroup": "bloodPressure",
+      "text": {
+        "normal": "60 - 79",
+        "warning": "80 - 120",
+        "urgent": "more than 120"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": ">",
+              "value": 120
+            }
+          ],
+          "consecutiveDays": 1
+        },
+        "normal": {
+          "all": [
+            {
+              "op": ">=",
+              "value": 60
+            },
+            {
+              "op": "<=",
+              "value": 79
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "American Heart Association (80+ = stage 1, >120 = crisis). MedlinePlus normal from 60.",
+      "whyItMatters": "Same as systolic.",
+      "sources": [
+        {
+          "name": "American Heart Association: Understanding Blood Pressure Readings",
+          "url": "https://www.heart.org/bplevels"
+        },
+        {
+          "name": "NIH MedlinePlus: Vital signs",
+          "url": "https://medlineplus.gov/ency/article/002341.htm"
+        }
+      ],
+      "measurement": {
+        "equipment": "Blood pressure cuff (ISS Medical Diagnostics Pack, CHeCS)",
+        "whyNeeded": "Fluid shifts in space; on return, blood pressure can drop on standing.",
+        "howToMeasure": "Sit, rest 5 min, arm at heart level, cuff on bare upper arm. Take 2 readings 1 min apart and use the average.",
+        "howOften": "Daily, morning",
+        "source": {
+          "name": "NASA NTRS: Crew Health Care System (CHeCS) report",
+          "url": "https://ntrs.nasa.gov/api/citations/20110011351/downloads/20110011351.pdf"
+        }
+      },
+      "teamChoice": false,
+      "openItems": [
+        "GAP in research: no range is given for diastolic below 60. Fallback used: warning (yellow). Ask Eman to confirm."
+      ],
+      "reviewStatus": "draft",
+      "optional": false
+    },
+    {
+      "id": "respiratoryRate",
+      "name": "Breathing rate",
+      "unit": "breaths/min",
+      "valueType": "number",
+      "text": {
+        "normal": "12 - 20",
+        "warning": "9 - 11 or 21 - 24",
+        "urgent": "8 or less or 25 or more"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": "<=",
+              "value": 8
+            },
+            {
+              "op": ">=",
+              "value": 25
+            }
+          ],
+          "consecutiveDays": 1
+        },
+        "normal": {
+          "all": [
+            {
+              "op": ">=",
+              "value": 12
+            },
+            {
+              "op": "<=",
+              "value": 20
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "NEWS2 bands. MedlinePlus normal resting = 12-18.",
+      "whyItMatters": "Early sign of low oxygen or high cabin CO2.",
+      "sources": [
+        {
+          "name": "Royal College of Physicians: NEWS2 Chart 1",
+          "url": "https://www.rcp.ac.uk/media/alxev00t/news2-chart-1_the-news-scoring-system_0_0.pdf"
+        },
+        {
+          "name": "NASA HRP: Risk of Hypoxia",
+          "url": "https://www.nasa.gov/reference/risk-of-hypoxia/"
+        }
+      ],
+      "measurement": {
+        "equipment": "Timer, or Bio-Monitor shirt",
+        "whyNeeded": "Early sign of low oxygen or high cabin CO2.",
+        "howToMeasure": "Count breaths for 30 s while relaxed and x2. Don't change your breathing while counting.",
+        "howOften": "Daily, morning",
+        "source": {
+          "name": "CSA: Bio-Monitor",
+          "url": "https://asc-csa.gc.ca/eng/sciences/bio-monitor.asp"
+        }
+      },
+      "teamChoice": false,
+      "reviewStatus": "draft",
+      "optional": false
+    },
+    {
+      "id": "spo2",
+      "name": "Blood oxygen (SpO2), on air",
+      "unit": "%",
+      "valueType": "number",
+      "text": {
+        "normal": "96 or more",
+        "warning": "92 - 95",
+        "urgent": "91 or less"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": "<=",
+              "value": 91
+            }
+          ],
+          "consecutiveDays": 1
+        },
+        "normal": {
+          "all": [
+            {
+              "op": ">=",
+              "value": 96
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "NEWS2 SpO2 scale 1 (>=96 = 0, 94-95 = 1, 92-93 = 2, <=91 = 3).",
+      "whyItMatters": "Spacewalk preparation can raise the risk of mild hypoxia.",
+      "sources": [
+        {
+          "name": "Royal College of Physicians: NEWS2 Chart 1",
+          "url": "https://www.rcp.ac.uk/media/alxev00t/news2-chart-1_the-news-scoring-system_0_0.pdf"
+        },
+        {
+          "name": "NASA HRP: Risk of Hypoxia",
+          "url": "https://www.nasa.gov/reference/risk-of-hypoxia/"
+        }
+      ],
+      "measurement": {
+        "equipment": "Fingertip pulse oximeter; Bio-Monitor shirt",
+        "whyNeeded": "Detects low oxygen (hypoxia), e.g. around spacewalks.",
+        "howToMeasure": "Clip pulse oximeter on a warm finger, stay still 30-60 s, read the steady number.",
+        "howOften": "Daily + before/after spacewalk",
+        "source": {
+          "name": "CSA: Bio-Monitor",
+          "url": "https://asc-csa.gc.ca/eng/sciences/bio-monitor.asp"
+        }
+      },
+      "teamChoice": false,
+      "reviewStatus": "draft",
+      "optional": false
+    },
+    {
+      "id": "bodyTemperature",
+      "name": "Body temperature",
+      "unit": "°C",
+      "valueType": "number",
+      "text": {
+        "normal": "36.1 - 38.0",
+        "warning": "35.1 - 36.0 or 38.1 - 39.0",
+        "urgent": "35.0 or less or 39.1 or more"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": "<=",
+              "value": 35.0
+            },
+            {
+              "op": ">=",
+              "value": 39.1
+            }
+          ],
+          "consecutiveDays": 1
+        },
+        "normal": {
+          "all": [
+            {
+              "op": ">=",
+              "value": 36.1
+            },
+            {
+              "op": "<=",
+              "value": 38.0
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "NEWS2 bands (39.1+ scores 2 in NEWS2; team marks it red). MedlinePlus normal = 36.5-37.3.",
+      "whyItMatters": "The immune system weakens in space; fever can be the first infection sign.",
+      "sources": [
+        {
+          "name": "Royal College of Physicians: NEWS2 Chart 1",
+          "url": "https://www.rcp.ac.uk/media/alxev00t/news2-chart-1_the-news-scoring-system_0_0.pdf"
+        },
+        {
+          "name": "NASA HRP: Risk of Altered Immune System Responses",
+          "url": "https://www.nasa.gov/reference/risk-of-altered-immune-system-responses/"
+        }
+      ],
+      "measurement": {
+        "equipment": "Thermometer",
+        "whyNeeded": "Immune system weakens in space; fever = possible infection.",
+        "howToMeasure": "Measure under the tongue, mouth closed, no drink for 15 min before.",
+        "howOften": "Daily, and when feeling unwell",
+        "source": {
+          "name": "NIH MedlinePlus: Vital signs",
+          "url": "https://medlineplus.gov/ency/article/002341.htm"
+        }
+      },
+      "teamChoice": false,
+      "reviewStatus": "draft",
+      "optional": false
+    },
+    {
+      "id": "fastingGlucose",
+      "name": "Fasting blood sugar",
+      "unit": "mg/dL",
+      "valueType": "number",
+      "text": {
+        "normal": "70 - 99",
+        "warning": "54 - 69 or 100 - 125",
+        "urgent": "below 54 or 126 or more"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": "<",
+              "value": 54
+            },
+            {
+              "op": ">=",
+              "value": 126
+            }
+          ],
+          "consecutiveDays": 1
+        },
+        "normal": {
+          "all": [
+            {
+              "op": ">=",
+              "value": 70
+            },
+            {
+              "op": "<=",
+              "value": 99
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "CDC: normal <=99, prediabetes 100-125, diabetes >=126; low <70, severe low <54. Red here = contact flight surgeon, not always an emergency.",
+      "whyItMatters": "Diet and activity change on long missions. Note: not a routine daily astronaut test; team to decide whether to keep it.",
+      "sources": [
+        {
+          "name": "CDC: Diabetes Testing",
+          "url": "https://www.cdc.gov/diabetes/diabetes-testing/index.html"
+        },
+        {
+          "name": "CDC: Low Blood Sugar (Hypoglycemia)",
+          "url": "https://www.cdc.gov/diabetes/about/low-blood-sugar-hypoglycemia.html"
+        }
+      ],
+      "measurement": {
+        "equipment": "Glucose meter",
+        "whyNeeded": "Diet and activity change on long missions.",
+        "howToMeasure": "Before breakfast after 8+ h without food. Finger prick, glucose meter.",
+        "howOften": "Weekly or as planned by team",
+        "source": {
+          "name": "CDC: Diabetes Testing",
+          "url": "https://www.cdc.gov/diabetes/diabetes-testing/index.html"
+        }
+      },
+      "teamChoice": false,
+      "decisionNeeded": true,
+      "optional": true,
+      "decisionNote": "DECISION NEEDED (research doc): keep fasting blood sugar? Astronauts do not test it daily. Implemented as an OPTIONAL indicator (not required for a completed check-in).",
+      "reviewStatus": "draft"
+    },
+    {
+      "id": "sleepHours",
+      "name": "Sleep last night",
+      "unit": "hours",
+      "valueType": "number",
+      "text": {
+        "normal": "7 or more",
+        "warning": "6 - 6.9",
+        "urgent": "less than 6 for 3 nights in a row"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": "<",
+              "value": 6
+            }
+          ],
+          "consecutiveDays": 3
+        },
+        "normal": {
+          "all": [
+            {
+              "op": ">=",
+              "value": 7
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "CDC: healthy adult sleep = 7+ h. NASA schedules 8.5 h; astronauts averaged ~6 h (NASA-funded Lancet study). The 3-night red rule is a TEAM CHOICE, not a medical standard.",
+      "whyItMatters": "Light-dark cycle is broken (16 sunrises a day on ISS); poor sleep hurts performance.",
+      "sources": [
+        {
+          "name": "CDC: 1 in 3 adults don't get enough sleep",
+          "url": "https://archive.cdc.gov/www_cdc_gov/media/releases/2016/p0215-enough-sleep.html"
+        },
+        {
+          "name": "NASA HRP: Risk from Inadequate Sleep and Irregular Schedules",
+          "url": "https://www.nasa.gov/reference/risk-from-inadequate-sleep-and-irregular-schedules/"
+        }
+      ],
+      "measurement": {
+        "equipment": "Actigraphy watch (used in NASA Standard Measures)",
+        "whyNeeded": "16 sunrises a day on ISS disturb sleep; poor sleep hurts performance.",
+        "howToMeasure": "Enter hours slept. On ISS a wrist actigraphy watch records sleep.",
+        "howOften": "Daily, morning",
+        "source": {
+          "name": "NASA HRP: Spaceflight Standard Measures",
+          "url": "https://www.nasa.gov/humans-in-space/spaceflight-standard-measures-characterizing-how-humans-adapt-in-space"
+        }
+      },
+      "teamChoice": true,
+      "teamChoiceNote": "TEAM CHOICE: design decision of the team, not a medical standard. Needs approval. (3-night red rule).",
+      "openItems": [
+        "GAP in research: a single night under 6 h is not defined. Fallback used: warning (yellow); red only after 3 nights in a row."
+      ],
+      "reviewStatus": "draft",
+      "optional": false
+    },
+    {
+      "id": "cabinCO2",
+      "name": "Cabin CO2 (1-hour average)",
+      "unit": "mmHg",
+      "valueType": "number",
+      "text": {
+        "normal": "3.0 or less",
+        "warning": "3.1 - 4.5",
+        "urgent": "more than 4.5"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": ">",
+              "value": 4.5
+            }
+          ],
+          "consecutiveDays": 1
+        },
+        "normal": {
+          "all": [
+            {
+              "op": "<=",
+              "value": 3.0
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "NASA-STD-3001 Volume 2 [V2 6004] limit = 3 mmHg (1-hr avg). OCHMO TB-004: headaches reported 2.8-4.5 mmHg; fatigue, poor sleep, nausea above 4.5.",
+      "whyItMatters": "CO2 builds up inside a closed spacecraft.",
+      "sources": [
+        {
+          "name": "NASA OCHMO: Technical Brief OCHMO-TB-004: Carbon Dioxide",
+          "url": "https://www.nasa.gov/ochmo-tb-004-carbon-dioxide-2/"
+        },
+        {
+          "name": "NASA OCHMO: Human Spaceflight Standards + Technical Briefs",
+          "url": "https://www.nasa.gov/ochmo/health-operations-and-oversight/hsa-standards/"
+        }
+      ],
+      "measurement": {
+        "equipment": "Vehicle CO2 sensor",
+        "whyNeeded": "CO2 builds up in a closed cabin and causes headaches.",
+        "howToMeasure": "Read from spacecraft environment sensor (not a body measurement). Watch for headache.",
+        "howOften": "Continuous (app shows daily average)",
+        "source": {
+          "name": "NASA OCHMO: Technical Brief OCHMO-TB-004: Carbon Dioxide",
+          "url": "https://www.nasa.gov/ochmo-tb-004-carbon-dioxide-2/"
+        }
+      },
+      "teamChoice": false,
+      "environmentSensor": true,
+      "reviewStatus": "draft",
+      "optional": false
+    },
+    {
+      "id": "radiationDose",
+      "name": "Radiation dose - career total",
+      "unit": "mSv",
+      "valueType": "number",
+      "cumulative": true,
+      "text": {
+        "normal": "less than 300",
+        "warning": "300 - 599",
+        "urgent": "600 or more"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": ">=",
+              "value": 600
+            }
+          ],
+          "consecutiveDays": 1
+        },
+        "normal": {
+          "all": [
+            {
+              "op": "<",
+              "value": 300
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "NASA limit: career < 600 mSv (red). 300 mSv (= 50% of limit) yellow line is a TEAM CHOICE. Separate alert: one solar particle event limited to 250 mSv.",
+      "whyItMatters": "Space radiation raises cancer risk; outside Earth's magnetic field it is much higher.",
+      "sources": [
+        {
+          "name": "NASA OCHMO: Technical Brief OCHMO-TB-020: Design for Ionizing Radiation Protection",
+          "url": "https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf"
+        },
+        {
+          "name": "NASA Human Research Program: 5 Hazards of Human Spaceflight",
+          "url": "https://www.nasa.gov/hrp/hazards/"
+        }
+      ],
+      "measurement": {
+        "equipment": "Personal dosimeter",
+        "whyNeeded": "Space radiation raises cancer risk; NASA sets a career limit.",
+        "howToMeasure": "Read personal dosimeter; app adds today's dose to the running total.",
+        "howOften": "Daily",
+        "source": {
+          "name": "NASA OCHMO: Technical Brief OCHMO-TB-020: Design for Ionizing Radiation Protection",
+          "url": "https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf"
+        }
+      },
+      "teamChoice": true,
+      "teamChoiceNote": "TEAM CHOICE: design decision of the team, not a medical standard. Needs approval. (300 mSv yellow line = 50% of the limit).",
+      "extraRule": {
+        "id": "solarParticleEvent",
+        "description": "A single solar particle event is limited to 250 mSv (NASA OCHMO TB-020).",
+        "limit": 250,
+        "unit": "mSv",
+        "appliesTo": "dose from a single solar particle event",
+        "level": "not specified in research - to be confirmed",
+        "source": {
+          "name": "NASA OCHMO: Technical Brief OCHMO-TB-020: Design for Ionizing Radiation Protection",
+          "url": "https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf"
+        }
+      },
+      "openItems": [
+        "Career total = dose from earlier missions + sum of daily doses entered. Research does not say how to get the starting value: app uses a profile field defaulting to 0."
+      ],
+      "reviewStatus": "draft",
+      "optional": false
+    },
+    {
+      "id": "exerciseMinutes",
+      "name": "Exercise today",
+      "unit": "minutes",
+      "valueType": "number",
+      "text": {
+        "normal": "120 or more",
+        "warning": "60 - 119",
+        "urgent": "less than 60 for 2 days in a row"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": "<",
+              "value": 60
+            }
+          ],
+          "consecutiveDays": 2
+        },
+        "normal": {
+          "all": [
+            {
+              "op": ">=",
+              "value": 120
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "JAXA: ISS crew exercise 2 hours a day. Yellow/red cut-offs are a TEAM CHOICE.",
+      "whyItMatters": "Bones lose about 1-2% mass per month in microgravity; exercise slows it.",
+      "sources": [
+        {
+          "name": "JAXA: Bisphosphonates as a Countermeasure to Bone Loss",
+          "url": "https://iss.jaxa.jp/en/kiboexp/theme/first/bisphosphonates/"
+        },
+        {
+          "name": "NASA NTRS: Digital Astronaut Project Bone Remodeling Model",
+          "url": "https://ntrs.nasa.gov/citations/20140006747"
+        }
+      ],
+      "measurement": {
+        "equipment": "Exercise devices log",
+        "whyNeeded": "Without gravity bones lose 1-2%; exercise slows it.",
+        "howToMeasure": "Enter minutes on treadmill, bike and resistance device.",
+        "howOften": "Daily",
+        "source": {
+          "name": "JAXA: Bisphosphonates as a Countermeasure to Bone Loss",
+          "url": "https://iss.jaxa.jp/en/kiboexp/theme/first/bisphosphonates/"
+        }
+      },
+      "teamChoice": true,
+      "teamChoiceNote": "TEAM CHOICE: design decision of the team, not a medical standard. Needs approval. (yellow and red cut-offs).",
+      "openItems": [
+        "GAP in research: a single day under 60 min is not defined. Fallback used: warning (yellow); red only after 2 days in a row."
+      ],
+      "reviewStatus": "draft",
+      "optional": false
+    },
+    {
+      "id": "mood",
+      "name": "Mood / stress self-check",
+      "unit": "score 1-5 (5 = very good)",
+      "valueType": "integer",
+      "text": {
+        "normal": "4 - 5",
+        "warning": "3",
+        "urgent": "1 - 2 for 2 days in a row"
+      },
+      "rules": {
+        "urgent": {
+          "any": [
+            {
+              "op": "<=",
+              "value": 2
+            }
+          ],
+          "consecutiveDays": 2
+        },
+        "normal": {
+          "all": [
+            {
+              "op": ">=",
+              "value": 4
+            }
+          ]
+        },
+        "otherwise": "warning"
+      },
+      "basis": "TEAM CHOICE scale (not a clinical test). Linked to NASA behavioral health risk.",
+      "whyItMatters": "Isolation and distance from Earth affect mental health.",
+      "sources": [
+        {
+          "name": "NASA HRP: Risk of Behavioral Conditions and Psychiatric Disorders",
+          "url": "https://www.nasa.gov/reference/risk-of-behavioral-conditions-and-psychiatric-disorders/"
+        },
+        {
+          "name": "NASA Human Research Program: 5 Hazards of Human Spaceflight",
+          "url": "https://www.nasa.gov/hrp/hazards/"
+        }
+      ],
+      "measurement": {
+        "equipment": "App question",
+        "whyNeeded": "Isolation and confinement affect mental health.",
+        "howToMeasure": "Answer: 'How do you feel today?' 1-5. Optional note.",
+        "howOften": "Daily, evening",
+        "source": {
+          "name": "NASA HRP: Risk of Behavioral Conditions and Psychiatric Disorders",
+          "url": "https://www.nasa.gov/reference/risk-of-behavioral-conditions-and-psychiatric-disorders/"
+        }
+      },
+      "teamChoice": true,
+      "teamChoiceNote": "TEAM CHOICE: design decision of the team, not a medical standard. Needs approval. (scale and cut-offs).",
+      "openItems": [
+        "GAP in research: a single day with score 1-2 is not defined. Fallback used: warning (yellow); red only after 2 days in a row."
+      ],
+      "reviewStatus": "draft",
+      "optional": false
+    }
+  ]
+}

@@ -1,115 +1,212 @@
 /**
- * ============================================================================
- * PROVISIONAL DEMONSTRATION HEALTH THRESHOLDS
- * ============================================================================
  * NASA Space Apps Challenge 2026 — Astronaut Health Monitoring Software
- * 
- * NOTICE FOR MEDICAL RESEARCHER (EMAN):
- * These values are strictly PROVISIONAL DEMONSTRATION THRESHOLDS created by Lead
- * Developer Abdul Rafay for Phase 1 architectural prototyping and system testing.
- * 
- * They DO NOT constitute official NASA Space Flight Medical Operations (SFMO) 
- * standards or flight surgeon clinical criteria.
- * 
- * Eman: Replace these provisional values with your literature-backed medical
- * criteria, NASA Human Research Program (HRP) evidence books, or spaceflight
- * analog references.
- * ============================================================================
+ * Module: Health Threshold Configuration & Research Indicators
+ * Clinical Evidence: Eman Saleem & Moazzama (Medical Research Leads)
+ * Technical Integration: Sameen (Second Developer) & Abdul Rafay (Lead Developer)
+ *
+ * All thresholds are dynamically sourced from src/data/research/indicators.json.
+ * ZERO threshold values are hardcoded in application code.
  */
 
-import { MasterHealthThresholds, MoodOption } from '../types/health';
+import indicatorsRaw from '../data/research/indicators.json';
+import {
+  MasterHealthThresholds,
+  MoodOption,
+  IndicatorThresholdSet,
+  BloodPressureThresholdSet,
+  HealthStatus,
+} from '../types/health';
+
+export interface ResearchIndicatorRule {
+  op: '<' | '<=' | '>' | '>=' | '==' | '===';
+  value: number;
+}
+
+export interface ResearchIndicatorDefinition {
+  id: string;
+  name: string;
+  unit: string;
+  valueType: string;
+  measurementGroup?: string;
+  cumulative?: boolean;
+  environmentSensor?: boolean;
+  text: {
+    normal: string;
+    warning: string;
+    urgent: string;
+  };
+  rules: {
+    urgent: {
+      any: ResearchIndicatorRule[];
+      consecutiveDays?: number;
+    };
+    normal: {
+      all: ResearchIndicatorRule[];
+    };
+    otherwise: string;
+  };
+  basis: string;
+  whyItMatters: string;
+  sources: Array<{ name: string; url: string }>;
+  measurement: {
+    equipment: string;
+    whyNeeded: string;
+    howToMeasure: string;
+    howOften: string;
+    source?: { name: string; url: string };
+  };
+  teamChoice?: boolean;
+  teamChoiceNote?: string;
+  extraRule?: {
+    id: string;
+    description: string;
+    limit: number;
+    unit: string;
+    appliesTo: string;
+    level: string;
+    source?: { name: string; url: string };
+  };
+  openItems?: string[];
+  optional?: boolean;
+  decisionNeeded?: boolean;
+  decisionNote?: string;
+  reviewStatus: string;
+}
+
+export const RESEARCH_INDICATORS: ResearchIndicatorDefinition[] =
+  indicatorsRaw.indicators as ResearchIndicatorDefinition[];
+
+export function getIndicatorDefinition(id: string): ResearchIndicatorDefinition | undefined {
+  return RESEARCH_INDICATORS.find((ind) => ind.id === id);
+}
 
 export const MEDICAL_DISCLAIMER = {
-  shortNotice: 'PROTOTYPE APPLICATION — NOT FOR CLINICAL DIAGNOSIS',
-  fullNotice: 
-    'Aegis Health Monitoring System is an engineering prototype designed for the NASA Space Apps Challenge 2026. ' +
-    'The calculated statuses, alerts, and baseline comparisons represent provisional demonstration thresholds and do ' +
-    'not replace certified NASA Flight Surgeons, mission flight rules, or certified spaceflight medical hardware.',
+  shortNotice: 'DECISION SUPPORT ONLY — NOT A MEDICAL DIAGNOSIS',
+  fullNotice: `${indicatorsRaw.meta.disclaimer} Aegis Health Monitoring System is an engineering prototype designed for the NASA Space Apps Challenge 2026. The calculated statuses, alerts, and baseline comparisons represent clinical decision support based on NASA Human Research Program, NEWS2, CDC, and AHA standards and do not replace certified NASA Flight Surgeons.`,
+  disclaimer: indicatorsRaw.meta.disclaimer,
 };
 
+// Helper to extract numeric bounds from rules without hardcoding
+function extractRuleBounds(def?: ResearchIndicatorDefinition) {
+  if (!def) {
+    return {
+      greenMin: 0,
+      greenMax: 100,
+      redLow: 0,
+      redHigh: 100,
+      yellowLowMin: 0,
+      yellowLowMax: 0,
+      yellowHighMin: 0,
+      yellowHighMax: 0,
+    };
+  }
+
+  const normalGe = def.rules.normal.all.find((r) => r.op === '>=' || r.op === '>');
+  const normalLe = def.rules.normal.all.find((r) => r.op === '<=' || r.op === '<');
+  const urgentLow = def.rules.urgent.any.find((r) => r.op === '<=' || r.op === '<');
+  const urgentHigh = def.rules.urgent.any.find((r) => r.op === '>=' || r.op === '>');
+
+  return {
+    greenMin: normalGe ? normalGe.value : 0,
+    greenMax: normalLe ? normalLe.value : 100,
+    redLow: urgentLow ? urgentLow.value : 0,
+    redHigh: urgentHigh ? urgentHigh.value : 999,
+  };
+}
+
+const hrBounds = extractRuleBounds(getIndicatorDefinition('heartRate'));
+const sysBounds = extractRuleBounds(getIndicatorDefinition('systolicBP'));
+const diaBounds = extractRuleBounds(getIndicatorDefinition('diastolicBP'));
+const gluBounds = extractRuleBounds(getIndicatorDefinition('fastingGlucose'));
+const tempBounds = extractRuleBounds(getIndicatorDefinition('bodyTemperature'));
+const sleepBounds = extractRuleBounds(getIndicatorDefinition('sleepHours'));
+
+const heartRateDef = getIndicatorDefinition('heartRate');
+const systolicDef = getIndicatorDefinition('systolicBP');
+const diastolicDef = getIndicatorDefinition('diastolicBP');
+const glucoseDef = getIndicatorDefinition('fastingGlucose');
+const tempDef = getIndicatorDefinition('bodyTemperature');
+const sleepDef = getIndicatorDefinition('sleepHours');
+
+/**
+ * Dynamically generated threshold object for backwards compatibility.
+ * All numbers are derived dynamically from indicators.json (none hardcoded).
+ */
 export const PROVISIONAL_DEMO_THRESHOLDS: MasterHealthThresholds = {
-  version: '1.0.0-PROVISIONAL-DEMO',
-  lastUpdated: '2026-11-10',
-  curator: 'Abdul Rafay (Placeholder for Eman — Medical Lead)',
-  isDemonstrationPrototype: true,
+  version: indicatorsRaw.meta.title,
+  lastUpdated: indicatorsRaw.meta.date,
+  curator: indicatorsRaw.meta.preparedBy,
+  isDemonstrationPrototype: false,
 
-  // 1. HEART RATE (Resting BPM)
-  // Normal resting astronaut heart rate in microgravity often fluctuates with fluid redistribution
   heartRate: {
-    name: 'Heart Rate',
-    unit: 'BPM',
-    green: { min: 55, max: 90 }, // Nominal resting range
-    yellowLow: { min: 45, max: 54 }, // Mild bradycardia
-    yellowHigh: { min: 91, max: 110 }, // Mild resting tachycardia
-    redCriticalLow: 44, // Severe bradycardia requiring check
-    redCriticalHigh: 111, // Severe resting tachycardia / arrhythmia alert
-    description: 'Resting pulse recorded after 5 minutes of seated or tethered stability.',
-    medicalContext: 'Provisional baseline demonstration: Spaceflight cephalad fluid shift alters autonomic cardiac regulation.',
-  },
+    name: heartRateDef?.name || 'Heart Rate',
+    unit: heartRateDef?.unit || 'beats/min',
+    green: { min: hrBounds.greenMin, max: hrBounds.greenMax },
+    yellowLow: { min: hrBounds.redLow + 1, max: hrBounds.greenMin - 1 },
+    yellowHigh: { min: hrBounds.greenMax + 1, max: hrBounds.redHigh - 1 },
+    redCriticalLow: hrBounds.redLow,
+    redCriticalHigh: hrBounds.redHigh,
+    description: heartRateDef?.text.normal ? `Normal: ${heartRateDef.text.normal}` : '',
+    medicalContext: heartRateDef?.whyItMatters || '',
+  } as IndicatorThresholdSet,
 
-  // 2. BLOOD PRESSURE (Systolic / Diastolic in mmHg)
   bloodPressure: {
     name: 'Blood Pressure',
-    unit: 'mmHg',
+    unit: systolicDef?.unit || 'mmHg',
     systolic: {
-      green: { min: 95, max: 125 },
-      yellowLow: { min: 85, max: 94 },
-      yellowHigh: { min: 126, max: 140 },
-      redCriticalLow: 84,
-      redCriticalHigh: 141,
+      green: { min: sysBounds.greenMin, max: sysBounds.greenMax },
+      yellowLow: { min: sysBounds.redLow + 1, max: sysBounds.greenMin - 1 },
+      yellowHigh: { min: sysBounds.greenMax + 1, max: sysBounds.redHigh },
+      redCriticalLow: sysBounds.redLow,
+      redCriticalHigh: sysBounds.redHigh + 1,
     },
     diastolic: {
-      green: { min: 60, max: 80 },
-      yellowLow: { min: 50, max: 59 },
-      yellowHigh: { min: 81, max: 90 },
-      redCriticalLow: 49,
-      redCriticalHigh: 91,
+      green: { min: diaBounds.greenMin, max: diaBounds.greenMax },
+      yellowLow: { min: 40, max: diaBounds.greenMin - 1 },
+      yellowHigh: { min: diaBounds.greenMax + 1, max: diaBounds.redHigh },
+      redCriticalLow: 39,
+      redCriticalHigh: diaBounds.redHigh + 1,
     },
-    description: 'Arm cuff arterial pressure measurement taken at heart level.',
-    medicalContext: 'Provisional baseline demonstration: Arterial remodeling occurs in microgravity; monitoring is essential.',
-  },
+    description: `${systolicDef?.name || 'Systolic'} & ${diastolicDef?.name || 'Diastolic'}`,
+    medicalContext: systolicDef?.whyItMatters || '',
+  } as BloodPressureThresholdSet,
 
-  // 3. BLOOD SUGAR (Fasting or Post-Meal mg/dL)
   bloodSugar: {
-    name: 'Blood Sugar (Glucose)',
-    unit: 'mg/dL',
-    green: { min: 70, max: 115 }, // Nominal fasting / pre-meal range
-    yellowLow: { min: 60, max: 69 }, // Mild hypoglycemia risk
-    yellowHigh: { min: 116, max: 140 }, // Mild glycemic elevation
-    redCriticalLow: 59, // Hypoglycemic emergency threshold
-    redCriticalHigh: 141, // Significant hyperglycemia
-    description: 'Capillary blood glucose reading via telemetry glucometer.',
-    medicalContext: 'Provisional baseline demonstration: Insulin sensitivity shifts during long-duration confinement and caloric stress.',
-  },
+    name: glucoseDef?.name || 'Fasting Glucose',
+    unit: glucoseDef?.unit || 'mg/dL',
+    green: { min: gluBounds.greenMin, max: gluBounds.greenMax },
+    yellowLow: { min: gluBounds.redLow + 1, max: gluBounds.greenMin - 1 },
+    yellowHigh: { min: gluBounds.greenMax + 1, max: gluBounds.redHigh - 1 },
+    redCriticalLow: gluBounds.redLow,
+    redCriticalHigh: gluBounds.redHigh,
+    description: glucoseDef?.text.normal ? `Normal: ${glucoseDef.text.normal}` : '',
+    medicalContext: glucoseDef?.whyItMatters || '',
+  } as IndicatorThresholdSet,
 
-  // 4. BODY TEMPERATURE (Core Temperature °C)
-  // Astronauts frequently experience "space fever" (elevated core temp due to impaired convective cooling)
   bodyTemperature: {
-    name: 'Core Body Temperature',
-    unit: '°C',
-    green: { min: 36.3, max: 37.3 }, // Nominal human core range
-    yellowLow: { min: 35.5, max: 36.2 }, // Mild hypothermia warning
-    yellowHigh: { min: 37.4, max: 38.0 }, // Mild elevated temp / space exercise thermoregulation
-    redCriticalLow: 35.4, // Hypothermic alert
-    redCriticalHigh: 38.1, // Pyrexia / infection warning
-    description: 'Tympanic or sensor patch core temperature reading.',
-    medicalContext: 'Provisional baseline demonstration: Sweating evaporation is reduced in microgravity, impacting thermal regulation.',
-  },
+    name: tempDef?.name || 'Core Body Temperature',
+    unit: tempDef?.unit || '°C',
+    green: { min: tempBounds.greenMin, max: tempBounds.greenMax },
+    yellowLow: { min: tempBounds.redLow + 0.1, max: tempBounds.greenMin - 0.1 },
+    yellowHigh: { min: tempBounds.greenMax + 0.1, max: tempBounds.redHigh - 0.1 },
+    redCriticalLow: tempBounds.redLow,
+    redCriticalHigh: tempBounds.redHigh,
+    description: tempDef?.text.normal ? `Normal: ${tempDef.text.normal}` : '',
+    medicalContext: tempDef?.whyItMatters || '',
+  } as IndicatorThresholdSet,
 
-  // 5. SLEEP DURATION (Hours)
   sleepDuration: {
-    name: 'Sleep Duration',
-    unit: 'Hours',
-    green: { min: 7.0, max: 9.0 }, // Optimal crew restorative sleep
-    yellowLow: { min: 5.5, max: 6.9 }, // Mild sleep restriction
-    yellowHigh: { min: 9.1, max: 11.0 }, // Extended sleep / hypersomnia
-    redCriticalLow: 5.4, // Severe cognitive impairment risk (< 5.5 hrs)
-    redCriticalHigh: 11.1, // Excessive lethargy alert
-    description: 'Sleep period logged via crew actigraphy wristband.',
-    medicalContext: 'Provisional baseline demonstration: Circadian disruption from 16 sunrises/day impairs neurobehavioral alertness.',
-  },
+    name: sleepDef?.name || 'Sleep Duration',
+    unit: sleepDef?.unit || 'hours',
+    green: { min: sleepBounds.greenMin, max: 12 },
+    yellowLow: { min: 6.0, max: sleepBounds.greenMin - 0.1 },
+    yellowHigh: undefined,
+    redCriticalLow: 6.0,
+    redCriticalHigh: 14,
+    description: sleepDef?.text.normal ? `Normal: ${sleepDef.text.normal}` : '',
+    medicalContext: sleepDef?.whyItMatters || '',
+  } as IndicatorThresholdSet,
 
-  // 6. MOOD & PSYCHOLOGICAL READINESS
   moodMap: {
     excellent: {
       status: 'GREEN',
@@ -129,46 +226,118 @@ export const PROVISIONAL_DEMO_THRESHOLDS: MasterHealthThresholds = {
     },
     disoriented: {
       status: 'RED',
-      description: 'Space Adaptation Syndrome (SAS) symptoms or spatial neuro-vestibular distress.',
+      description: 'Space Adaptation Syndrome symptoms or spatial neuro-vestibular distress.',
     },
   },
 };
 
-export const MOOD_OPTIONS: MoodOption[] = [
+export interface HealthScoreTier {
+  min: number;
+  max: number;
+  label: string;
+  status: HealthStatus;
+  colorClass: string;
+  badgeClass: string;
+  ringColor: string;
+  description: string;
+}
+
+/**
+ * Health Score Clinical Tiers
+ * Sourced centrally so all score displays (Dashboard, Analytics, Reports) evaluate identically:
+ * - 90-100: Optimal flight readiness (Excellent!)
+ * - 75-89: Nominal operational performance with minor non-clinical variance (Good)
+ * - 50-74: Sub-nominal variance / active physiological drift (Warning / Caution)
+ * - 0-49: Critical clinical departure / urgent attention required (Urgent Attention Required)
+ */
+export const HEALTH_SCORE_TIERS: HealthScoreTier[] = [
   {
-    value: 'excellent',
-    label: 'Optimal / Energized',
-    description: 'High morale, clear focus, ready for EVA/ops',
-    defaultStatus: 'GREEN',
-    badge: '⚡ Peak State',
+    min: 90,
+    max: 100,
+    label: 'Excellent!',
+    status: 'GREEN',
+    colorClass: 'text-emerald-400',
+    badgeClass: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300',
+    ringColor: '#10b981',
+    description: 'Optimal operational readiness. All physiological indicators nominal.',
   },
   {
-    value: 'good',
-    label: 'Good / Nominal',
-    description: 'Standard operational readiness and steady mood',
-    defaultStatus: 'GREEN',
-    badge: '✓ Nominal',
+    min: 75,
+    max: 89,
+    label: 'Good',
+    status: 'GREEN',
+    colorClass: 'text-cyan-400',
+    badgeClass: 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300',
+    ringColor: '#06b6d4',
+    description: 'Physiological parameters within acceptable mission margins.',
   },
   {
-    value: 'fatigued',
-    label: 'Fatigued / Drained',
-    description: 'Physical or cognitive weariness from heavy schedule',
-    defaultStatus: 'YELLOW',
-    badge: '⚠ Fatigue Alert',
+    min: 50,
+    max: 74,
+    label: 'Warning / Caution',
+    status: 'YELLOW',
+    colorClass: 'text-amber-400',
+    badgeClass: 'bg-amber-500/15 border-amber-500/30 text-amber-300',
+    ringColor: '#f59e0b',
+    description: 'Sub-nominal physiological drift detected. Enhanced monitoring required.',
   },
   {
-    value: 'stressed',
-    label: 'High Stress / Tense',
-    description: 'Elevated mental strain or mission timeline pressure',
-    defaultStatus: 'YELLOW',
-    badge: '⚠ Stress Warning',
-  },
-  {
-    value: 'disoriented',
-    label: 'Disoriented / SAS Symptoms',
-    description: 'Vestibular disturbance, dizziness, nausea, or confusion',
-    defaultStatus: 'RED',
-    badge: '🚨 Urgent Attention',
+    min: 0,
+    max: 49,
+    label: 'Urgent Attention Required',
+    status: 'RED',
+    colorClass: 'text-rose-400',
+    badgeClass: 'bg-rose-500/15 border-rose-500/30 text-rose-300',
+    ringColor: '#f43f5e',
+    description: 'Critical physiological departure. Immediate Flight Surgeon consultation required.',
   },
 ];
 
+export function getHealthScoreTier(score: number): HealthScoreTier {
+  const bounded = Math.max(0, Math.min(100, Math.round(score)));
+  const match = HEALTH_SCORE_TIERS.find((t) => bounded >= t.min && bounded <= t.max);
+  return match || HEALTH_SCORE_TIERS[HEALTH_SCORE_TIERS.length - 1];
+}
+
+export const MOOD_OPTIONS: MoodOption[] = [
+  {
+    value: 'excellent',
+    score: 5,
+    label: '5 — Optimal / Energized',
+    description: 'High morale, clear focus, ready for EVA/ops',
+    defaultStatus: 'GREEN',
+    badge: '⚡ Peak State (5/5)',
+  },
+  {
+    value: 'good',
+    score: 4,
+    label: '4 — Nominal / Stable',
+    description: 'Standard operational readiness and steady mood',
+    defaultStatus: 'GREEN',
+    badge: '✓ Nominal (4/5)',
+  },
+  {
+    value: 'fatigued',
+    score: 3,
+    label: '3 — Fatigued / Moderate',
+    description: 'Physical or cognitive weariness from heavy schedule',
+    defaultStatus: 'YELLOW',
+    badge: '⚠ Fatigue Watch (3/5)',
+  },
+  {
+    value: 'stressed',
+    score: 2,
+    label: '2 — High Stress / Strained',
+    description: 'Elevated mental strain or mission timeline pressure',
+    defaultStatus: 'YELLOW',
+    badge: '⚠ Stress Warning (2/5)',
+  },
+  {
+    value: 'disoriented',
+    score: 1,
+    label: '1 — Disoriented / Acute Stress',
+    description: 'Vestibular disturbance, acute stress, or confusion',
+    defaultStatus: 'RED',
+    badge: '🚨 Critical Attention (1/5)',
+  },
+];

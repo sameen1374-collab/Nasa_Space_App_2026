@@ -1,53 +1,110 @@
 /**
  * NASA Space Apps Challenge 2026 — Astronaut Health Monitoring Software
  * Module: Health Type Definitions
- * Lead Developer: Abdul Rafay (Phase 1 Architecture)
- * 
- * Note for Team Members:
- * - Sameen: Use DailyAssessmentRecord and IndicatorResult for the charts, body map, and guidance engine.
- * - Eman: Use HealthThresholdConfig and ThresholdRange when supplying verified flight surgeon values.
+ * Authors: Abdul Rafay (Lead), Sameen (Second Developer)
+ * Clinical Evidence: Eman Saleem & Moazzama (Medical Research Leads)
  */
 
 export type HealthStatus = 'GREEN' | 'YELLOW' | 'RED';
 
 export type MoodType = 'excellent' | 'good' | 'fatigued' | 'stressed' | 'disoriented';
 
+export type MoodScore = 1 | 2 | 3 | 4 | 5;
+
 export interface MoodOption {
   value: MoodType;
+  score: MoodScore;
   label: string;
   description: string;
   defaultStatus: HealthStatus;
   badge: string;
 }
 
+export type IndicatorId =
+  | 'heartRate'
+  | 'systolicBP'
+  | 'diastolicBP'
+  | 'respiratoryRate'
+  | 'spo2'
+  | 'bodyTemperature'
+  | 'fastingGlucose'
+  | 'sleepHours'
+  | 'cabinCO2'
+  | 'radiationDose'
+  | 'exerciseMinutes'
+  | 'mood'
+  // Legacy aliases for backward compatibility
+  | 'bloodPressure'
+  | 'bloodSugar'
+  | 'sleepDuration';
+
 export interface AssessmentFormValues {
-  heartRate: string; // BPM
-  systolic: string; // mmHg
-  diastolic: string; // mmHg
-  bloodSugar: string; // mg/dL
-  bodyTemperature: string; // °C
-  sleepDuration: string; // Hours
-  mood: MoodType;
+  heartRate: string;
+  systolicBP: string;
+  diastolicBP: string;
+  respiratoryRate: string;
+  spo2: string;
+  bodyTemperature: string;
+  fastingGlucose: string;
+  sleepHours: string;
+  cabinCO2: string;
+  radiationDose: string; // Today's logged dose (mSv)
+  exerciseMinutes: string;
+  mood: string; // "1" - "5"
   notes?: string;
+
+  // Legacy field aliases
+  systolic?: string;
+  diastolic?: string;
+  bloodSugar?: string;
+  sleepDuration?: string;
 }
 
 export interface ParsedAssessmentValues {
   heartRate: number;
-  systolic: number;
-  diastolic: number;
-  bloodSugar: number;
+  systolicBP: number;
+  diastolicBP: number;
+  respiratoryRate?: number;
+  spo2?: number;
   bodyTemperature: number;
-  sleepDuration: number;
-  mood: MoodType;
+  fastingGlucose?: number;
+  sleepHours: number;
+  cabinCO2?: number;
+  radiationDose?: number; // Today's increment (mSv)
+  cumulativeRadiationDose?: number; // Running career total (mSv)
+  exerciseMinutes?: number;
+  mood: number; // 1 - 5
   notes?: string;
+
+  // Legacy aliases
+  systolic?: number;
+  diastolic?: number;
+  bloodSugar?: number;
+  sleepDuration?: number;
+}
+
+export interface IndicatorMeasurementGuide {
+  equipment: string;
+  whyNeeded: string;
+  howToMeasure: string;
+  howOften: string;
+  source?: {
+    name: string;
+    url: string;
+  };
+}
+
+export interface IndicatorSourceRef {
+  name: string;
+  url: string;
 }
 
 export interface IndicatorResult {
-  indicatorId: 'heartRate' | 'bloodPressure' | 'bloodSugar' | 'bodyTemperature' | 'sleepDuration' | 'mood';
+  indicatorId: IndicatorId;
   displayName: string;
   valueDisplay: string;
   numericValue?: number;
-  secondaryValue?: number; // e.g. diastolic for blood pressure
+  secondaryValue?: number;
   unit: string;
   status: HealthStatus;
   statusLabel: string;
@@ -56,6 +113,10 @@ export interface IndicatorResult {
   baselineNominal?: string;
   deviationPercent?: number;
   criticality: 'low' | 'medium' | 'high';
+  teamChoice?: boolean;
+  teamChoiceNote?: string;
+  sources?: IndicatorSourceRef[];
+  measurement?: IndicatorMeasurementGuide;
 }
 
 export interface OverallHealthResult {
@@ -78,11 +139,23 @@ export interface DailyAssessmentRecord {
   values: ParsedAssessmentValues;
   results: {
     heartRate: IndicatorResult;
+    systolicBP?: IndicatorResult;
+    diastolicBP?: IndicatorResult;
+    respiratoryRate?: IndicatorResult;
+    spo2?: IndicatorResult;
+    bodyTemperature: IndicatorResult;
+    fastingGlucose?: IndicatorResult;
+    sleepHours?: IndicatorResult;
+    cabinCO2?: IndicatorResult;
+    radiationDose?: IndicatorResult;
+    exerciseMinutes?: IndicatorResult;
+    mood: IndicatorResult;
+
+    // Legacy backward-compatibility getters
     bloodPressure: IndicatorResult;
     bloodSugar: IndicatorResult;
-    bodyTemperature: IndicatorResult;
     sleepDuration: IndicatorResult;
-    mood: IndicatorResult;
+    [key: string]: IndicatorResult | undefined;
   };
   overall: OverallHealthResult;
   isDemonstrationData?: boolean;
@@ -102,6 +175,7 @@ export interface AstronautProfile {
   restingHeartRateBaseline: number; // BPM
   bloodPressureBaseline: { systolic: number; diastolic: number };
   bodyTemperatureBaseline: number; // °C
+  previousCareerRadiationDose?: number; // Baseline accumulated mSv
   avatarUrl?: string;
 }
 
@@ -155,4 +229,3 @@ export interface MasterHealthThresholds {
   sleepDuration: IndicatorThresholdSet;
   moodMap: Record<MoodType, { status: HealthStatus; description: string }>;
 }
-

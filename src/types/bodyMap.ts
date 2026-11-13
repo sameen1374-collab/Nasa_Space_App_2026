@@ -8,11 +8,20 @@ import { HealthStatus } from './health';
 
 export type IndicatorKey =
   | 'heartRate'
+  | 'systolicBP'
+  | 'diastolicBP'
+  | 'respiratoryRate'
+  | 'spo2'
+  | 'bodyTemperature'
+  | 'fastingGlucose'
+  | 'sleepHours'
+  | 'cabinCO2'
+  | 'radiationDose'
+  | 'exerciseMinutes'
+  | 'mood'
   | 'bloodPressure'
   | 'bloodSugar'
-  | 'bodyTemperature'
-  | 'sleepDuration'
-  | 'mood';
+  | 'sleepDuration';
 
 /** System grouping for sidebar chip display */
 export type BodySystem =

@@ -2,9 +2,9 @@
  * NASA Space Apps Challenge 2026 — Astronaut Health Monitoring Software
  * Module: Longitudinal Health Trend Chart (Recharts)
  * Second Developer: Sameen (Phase 1/2 Visualization Engine)
- * 
+ *
  * Plots historical telemetry trends against clinical threshold bands.
- * Dynamic shaded bands are read strictly from src/config/thresholds.ts (no hardcoded numbers).
+ * Dynamic shaded bands are read strictly from src/data/research/indicators.json (no hardcoded numbers).
  * Points are colored and shaped (Circle=Green, Triangle=Yellow, Diamond=Red) for colorblind accessibility.
  */
 
@@ -20,22 +20,15 @@ import {
   ReferenceArea,
   CartesianGrid,
 } from 'recharts';
-import { PROVISIONAL_DEMO_THRESHOLDS } from '../../config/thresholds';
+import { getIndicatorDefinition } from '../../config/thresholds';
 import {
   DailyAssessmentRecord,
   HealthStatus,
-  MoodType,
+  IndicatorId,
 } from '../../types/health';
-import {
-  evaluateHeartRate,
-  evaluateBloodSugar,
-  evaluateBodyTemperature,
-  evaluateSleepDuration,
-  evaluateMood,
-  evaluateAllIndicators,
-  calculateOverallHealth,
-} from '../../services/healthStatus';
-import { getAstronautProfile, saveAssessmentsToStorage } from '../../services/storage';
+import { evaluateSingleIndicator } from '../../services/healthStatus';
+import { saveAssessmentsToStorage } from '../../services/storage';
+import { SAMPLE_ASSESSMENT_HISTORY } from '../../data/mockData';
 import { Card } from '../common/Card';
 import { StatusBadge } from '../common/StatusBadge';
 import {
@@ -50,15 +43,28 @@ import {
   Trash2,
   SlidersHorizontal,
   Info,
+  Wind,
+  Radio,
+  Zap,
+  Dumbbell,
 } from 'lucide-react';
 
 export type ChartIndicatorKey =
   | 'heartRate'
   | 'bloodPressure'
-  | 'bloodSugar'
+  | 'systolicBP'
+  | 'diastolicBP'
+  | 'respiratoryRate'
+  | 'spo2'
   | 'bodyTemperature'
-  | 'sleepDuration'
-  | 'mood';
+  | 'fastingGlucose'
+  | 'sleepHours'
+  | 'cabinCO2'
+  | 'radiationDose'
+  | 'exerciseMinutes'
+  | 'mood'
+  | 'bloodSugar'
+  | 'sleepDuration';
 
 interface TrendChartProps {
   records: DailyAssessmentRecord[];
@@ -86,7 +92,6 @@ interface CustomDotProps {
   cx?: number;
   cy?: number;
   payload?: ChartDataPoint;
-  strokeColor?: string;
 }
 
 const ColorblindStatusDot: React.FC<CustomDotProps> = ({ cx, cy, payload }) => {
@@ -148,8 +153,6 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   const [selectedIndicator, setSelectedIndicator] = useState<ChartIndicatorKey>('heartRate');
   const [filterDemoOnly, setFilterDemoOnly] = useState<'all' | 'real' | 'demo'>('all');
 
-  const thresholds = PROVISIONAL_DEMO_THRESHOLDS;
-
   // Filter records according to demo toggle
   const filteredRecords = useMemo(() => {
     let list = [...records];
@@ -164,232 +167,189 @@ export const TrendChart: React.FC<TrendChartProps> = ({
 
   // Transform records into chart points based on selected indicator
   const chartData = useMemo<ChartDataPoint[]>(() => {
-    return filteredRecords.map((rec) => {
+    const points: ChartDataPoint[] = [];
+
+    for (const rec of filteredRecords) {
       const date = new Date(rec.timestamp);
       const dateLabel = isNaN(date.getTime())
         ? `Sol ${rec.missionDay}`
         : `${date.getUTCMonth() + 1}/${date.getUTCDate()} UTC`;
 
-      let val = 0;
+      let val: number | undefined;
       let secVal: number | undefined;
       let unit = '';
       let status: HealthStatus = 'GREEN';
       let secStatus: HealthStatus | undefined;
       let label = '';
 
-      switch (selectedIndicator) {
-        case 'heartRate': {
-          val = rec.values.heartRate;
-          unit = thresholds.heartRate.unit;
-          status = rec.results.heartRate?.status || evaluateHeartRate(val).status;
-          label = `${val} ${unit}`;
-          break;
+      if (selectedIndicator === 'bloodPressure') {
+        val = rec.values.systolicBP ?? rec.values.systolic ?? 118;
+        secVal = rec.values.diastolicBP ?? rec.values.diastolic ?? 76;
+        unit = 'mmHg';
+        status = rec.results.bloodPressure?.status ?? 'GREEN';
+        label = `${val}/${secVal} mmHg`;
+      } else {
+        const def = getIndicatorDefinition(selectedIndicator);
+        unit = def?.unit || '';
+
+        switch (selectedIndicator) {
+          case 'heartRate':
+            val = rec.values.heartRate;
+            break;
+          case 'systolicBP':
+            val = rec.values.systolicBP ?? rec.values.systolic;
+            break;
+          case 'diastolicBP':
+            val = rec.values.diastolicBP ?? rec.values.diastolic;
+            break;
+          case 'respiratoryRate':
+            val = rec.values.respiratoryRate;
+            break;
+          case 'spo2':
+            val = rec.values.spo2;
+            break;
+          case 'bodyTemperature':
+            val = rec.values.bodyTemperature;
+            break;
+          case 'fastingGlucose':
+          case 'bloodSugar':
+            val = rec.values.fastingGlucose ?? rec.values.bloodSugar;
+            break;
+          case 'sleepHours':
+          case 'sleepDuration':
+            val = rec.values.sleepHours ?? rec.values.sleepDuration;
+            break;
+          case 'cabinCO2':
+            val = rec.values.cabinCO2;
+            break;
+          case 'radiationDose':
+            val = rec.values.cumulativeRadiationDose ?? rec.values.radiationDose;
+            break;
+          case 'exerciseMinutes':
+            val = rec.values.exerciseMinutes;
+            break;
+          case 'mood': {
+            const m = rec.values.mood;
+            if (typeof m === 'number') val = m;
+            else {
+              const legacy: Record<string, number> = { excellent: 5, good: 4, fatigued: 3, stressed: 2, disoriented: 1 };
+              val = legacy[m as string] ?? 4;
+            }
+            break;
+          }
         }
-        case 'bloodPressure': {
-          val = rec.values.systolic;
-          secVal = rec.values.diastolic;
-          unit = thresholds.bloodPressure.unit;
-          status = rec.results.bloodPressure?.status || 'GREEN';
-          label = `${val}/${secVal} ${unit}`;
-          break;
+
+        if (val === undefined || isNaN(val)) {
+          continue;
         }
-        case 'bloodSugar': {
-          val = rec.values.bloodSugar;
-          unit = thresholds.bloodSugar.unit;
-          status = rec.results.bloodSugar?.status || evaluateBloodSugar(val).status;
-          label = `${val} ${unit}`;
-          break;
-        }
-        case 'bodyTemperature': {
-          val = rec.values.bodyTemperature;
-          unit = thresholds.bodyTemperature.unit;
-          status = rec.results.bodyTemperature?.status || evaluateBodyTemperature(val).status;
-          label = `${val.toFixed(1)} ${unit}`;
-          break;
-        }
-        case 'sleepDuration': {
-          val = rec.values.sleepDuration;
-          unit = thresholds.sleepDuration.unit;
-          status = rec.results.sleepDuration?.status || evaluateSleepDuration(val).status;
-          label = `${val.toFixed(1)} ${unit}`;
-          break;
-        }
-        case 'mood': {
-          const moodScores: Record<MoodType, number> = {
-            excellent: 5,
-            good: 4,
-            fatigued: 3,
-            stressed: 2,
-            disoriented: 1,
-          };
-          val = moodScores[rec.values.mood] || 4;
-          unit = 'Readiness Index';
-          status = rec.results.mood?.status || evaluateMood(rec.values.mood).status;
-          label = `${rec.values.mood.toUpperCase()} (Score ${val})`;
-          break;
-        }
+
+        const evaluated =
+          rec.results[selectedIndicator as IndicatorId] ||
+          evaluateSingleIndicator(selectedIndicator as IndicatorId, val);
+        status = evaluated.status;
+        label = `${val} ${unit}`;
       }
 
-      return {
+      points.push({
         id: rec.id,
         sol: `Sol ${rec.missionDay}`,
         dateLabel,
         timestamp: rec.timestamp,
         missionDay: rec.missionDay,
-        value: val,
+        value: val ?? 0,
         secondaryValue: secVal,
         unit,
         status,
         statusSecondary: secStatus,
         label,
         isDemonstrationData: !!rec.isDemonstrationData,
-      };
-    });
-  }, [filteredRecords, selectedIndicator, thresholds]);
-
-  // Compute reference band boundaries dynamically from thresholds
-  const bandConfig = useMemo(() => {
-    switch (selectedIndicator) {
-      case 'heartRate': {
-        const cfg = thresholds.heartRate;
-        return {
-          title: 'Resting Heart Rate',
-          unit: cfg.unit,
-          green: cfg.green,
-          yellowLow: cfg.yellowLow,
-          yellowHigh: cfg.yellowHigh,
-          redLow: cfg.redCriticalLow,
-          redHigh: cfg.redCriticalHigh,
-          yDomain: [35, 125] as [number, number],
-          description: cfg.description,
-        };
-      }
-      case 'bloodPressure': {
-        const cfg = thresholds.bloodPressure.systolic;
-        return {
-          title: 'Blood Pressure (Systolic & Diastolic)',
-          unit: thresholds.bloodPressure.unit,
-          green: cfg.green,
-          yellowLow: cfg.yellowLow,
-          yellowHigh: cfg.yellowHigh,
-          redLow: cfg.redCriticalLow,
-          redHigh: cfg.redCriticalHigh,
-          yDomain: [45, 155] as [number, number],
-          description: 'Systolic arterial pressure with secondary diastolic telemetry tracking.',
-        };
-      }
-      case 'bloodSugar': {
-        const cfg = thresholds.bloodSugar;
-        return {
-          title: 'Blood Sugar (Glucose)',
-          unit: cfg.unit,
-          green: cfg.green,
-          yellowLow: cfg.yellowLow,
-          yellowHigh: cfg.yellowHigh,
-          redLow: cfg.redCriticalLow,
-          redHigh: cfg.redCriticalHigh,
-          yDomain: [50, 155] as [number, number],
-          description: cfg.description,
-        };
-      }
-      case 'bodyTemperature': {
-        const cfg = thresholds.bodyTemperature;
-        return {
-          title: 'Core Body Temperature',
-          unit: cfg.unit,
-          green: cfg.green,
-          yellowLow: cfg.yellowLow,
-          yellowHigh: cfg.yellowHigh,
-          redLow: cfg.redCriticalLow,
-          redHigh: cfg.redCriticalHigh,
-          yDomain: [34.8, 38.8] as [number, number],
-          description: cfg.description,
-        };
-      }
-      case 'sleepDuration': {
-        const cfg = thresholds.sleepDuration;
-        return {
-          title: 'Sleep Duration',
-          unit: cfg.unit,
-          green: cfg.green,
-          yellowLow: cfg.yellowLow,
-          yellowHigh: cfg.yellowHigh,
-          redLow: cfg.redCriticalLow,
-          redHigh: cfg.redCriticalHigh,
-          yDomain: [4.0, 12.0] as [number, number],
-          description: cfg.description,
-        };
-      }
-      case 'mood': {
-        return {
-          title: 'Psychological Readiness & Mood Score',
-          unit: 'Index (1-5)',
-          green: { min: 3.5, max: 5.5 },
-          yellowLow: { min: 1.5, max: 3.5 },
-          yellowHigh: undefined,
-          redLow: 1.5,
-          redHigh: 5.5,
-          yDomain: [0.5, 5.5] as [number, number],
-          description: '5=Peak, 4=Nominal, 3=Fatigued, 2=Stressed, 1=Disoriented (SAS alert)',
-        };
-      }
+      });
     }
-  }, [selectedIndicator, thresholds]);
 
-  // Generate 10-14 days of realistic sample demonstration telemetry
-  const handleLoadDemoData = () => {
-    const profile = getAstronautProfile();
-    const demoRecords: DailyAssessmentRecord[] = [];
-    const baseDay = profile.currentMissionDay;
+    return points;
+  }, [filteredRecords, selectedIndicator]);
 
-    // 12 days of realistic spaceflight progression
-    const sampleSeries = [
-      { dayOffset: 11, hr: 62, sys: 116, dia: 74, glu: 84, tmp: 36.6, slp: 8.0, mood: 'excellent' as MoodType, note: 'Pre-EVA nominal conditioning' },
-      { dayOffset: 10, hr: 64, sys: 118, dia: 76, glu: 88, tmp: 36.7, slp: 7.8, mood: 'excellent' as MoodType, note: 'Nominal maintenance shift' },
-      { dayOffset: 9, hr: 66, sys: 120, dia: 78, glu: 92, tmp: 36.8, slp: 7.5, mood: 'good' as MoodType, note: 'T2 treadmill 30 min run' },
-      { dayOffset: 8, hr: 72, sys: 122, dia: 80, glu: 96, tmp: 37.0, slp: 6.8, mood: 'good' as MoodType, note: 'Heavy payload repositioning' },
-      { dayOffset: 7, hr: 78, sys: 128, dia: 84, glu: 104, tmp: 37.2, slp: 6.2, mood: 'fatigued' as MoodType, note: 'Extended cargo berthing schedule' },
-      { dayOffset: 6, hr: 94, sys: 132, dia: 86, glu: 118, tmp: 37.5, slp: 5.4, mood: 'stressed' as MoodType, note: 'Post-EVA suit servicing fatigue' },
-      { dayOffset: 5, hr: 82, sys: 126, dia: 82, glu: 102, tmp: 37.1, slp: 6.5, mood: 'fatigued' as MoodType, note: 'Recovery hydration day' },
-      { dayOffset: 4, hr: 70, sys: 120, dia: 78, glu: 90, tmp: 36.9, slp: 7.4, mood: 'good' as MoodType, note: 'ECLSS filter rotation' },
-      { dayOffset: 3, hr: 65, sys: 118, dia: 76, glu: 86, tmp: 36.8, slp: 7.9, mood: 'good' as MoodType, note: 'Resistive ARED leg workout' },
-      { dayOffset: 2, hr: 63, sys: 116, dia: 74, glu: 85, tmp: 36.7, slp: 8.2, mood: 'excellent' as MoodType, note: 'Mission rest Sol' },
-      { dayOffset: 1, hr: 64, sys: 117, dia: 75, glu: 89, tmp: 36.8, slp: 7.7, mood: 'excellent' as MoodType, note: 'Robotics teleoperation test' },
-      { dayOffset: 0, hr: 68, sys: 119, dia: 77, glu: 91, tmp: 36.8, slp: 7.6, mood: 'good' as MoodType, note: 'Current flight day telemetry check' },
+  // Compute reference band boundaries dynamically from research definition
+  const bandConfig = useMemo(() => {
+    if (selectedIndicator === 'bloodPressure') {
+      const sysDef = getIndicatorDefinition('systolicBP');
+      const normalGe = sysDef?.rules.normal.all.find((r) => r.op === '>=' || r.op === '>')?.value ?? 111;
+      const normalLe = sysDef?.rules.normal.all.find((r) => r.op === '<=' || r.op === '<')?.value ?? 119;
+      const urgentLow = sysDef?.rules.urgent.any.find((r) => r.op === '<=' || r.op === '<')?.value ?? 90;
+      const urgentHigh = sysDef?.rules.urgent.any.find((r) => r.op === '>=' || r.op === '>')?.value ?? 180;
+
+      return {
+        title: 'Blood Pressure (Systolic & Diastolic)',
+        unit: 'mmHg',
+        green: { min: normalGe, max: normalLe },
+        yellowLow: { min: urgentLow + 1, max: normalGe - 1 },
+        yellowHigh: { min: normalLe + 1, max: urgentHigh },
+        redLow: urgentLow,
+        redHigh: urgentHigh + 1,
+        yDomain: [50, 200] as [number, number],
+        description: 'Systolic arterial pressure with secondary diastolic telemetry tracking.',
+      };
+    }
+
+    const def = getIndicatorDefinition(selectedIndicator);
+    if (!def) {
+      return {
+        title: selectedIndicator,
+        unit: '',
+        green: { min: 0, max: 100 },
+        yellowLow: undefined,
+        yellowHigh: undefined,
+        redLow: undefined,
+        redHigh: undefined,
+        yDomain: [0, 100] as [number, number],
+        description: '',
+      };
+    }
+
+    const normalGe = def.rules.normal.all.find((r) => r.op === '>=' || r.op === '>')?.value;
+    const normalLe = def.rules.normal.all.find((r) => r.op === '<=' || r.op === '<')?.value;
+    const urgentLow = def.rules.urgent.any.find((r) => r.op === '<=' || r.op === '<')?.value;
+    const urgentHigh = def.rules.urgent.any.find((r) => r.op === '>=' || r.op === '>')?.value;
+
+    let greenMin = normalGe ?? (urgentLow !== undefined ? urgentLow + 1 : 0);
+    let greenMax = normalLe ?? (urgentHigh !== undefined ? urgentHigh - 1 : 100);
+
+    let yDomain: [number, number] = [
+      urgentLow !== undefined ? Math.floor(urgentLow * 0.85) : Math.floor(greenMin * 0.85),
+      urgentHigh !== undefined ? Math.ceil(urgentHigh * 1.15) : Math.ceil(greenMax * 1.2),
     ];
 
-    sampleSeries.forEach((item, index) => {
-      const missionDay = baseDay - item.dayOffset;
-      const date = new Date(Date.now() - item.dayOffset * 86400000);
-      const parsedValues = {
-        heartRate: item.hr,
-        systolic: item.sys,
-        diastolic: item.dia,
-        bloodSugar: item.glu,
-        bodyTemperature: item.tmp,
-        sleepDuration: item.slp,
-        mood: item.mood,
-        notes: item.note,
-      };
+    if (selectedIndicator === 'bodyTemperature') {
+      yDomain = [34.0, 40.5];
+    } else if (selectedIndicator === 'spo2') {
+      yDomain = [85, 100];
+    } else if (selectedIndicator === 'mood') {
+      yDomain = [0.5, 5.5];
+      greenMin = 4;
+      greenMax = 5.5;
+    } else if (selectedIndicator === 'cabinCO2') {
+      yDomain = [0, 6.0];
+    } else if (selectedIndicator === 'radiationDose') {
+      yDomain = [0, 750];
+    }
 
-      const results = evaluateAllIndicators(parsedValues, profile);
-      const overall = calculateOverallHealth(results);
+    return {
+      title: def.name,
+      unit: def.unit,
+      green: { min: greenMin, max: greenMax },
+      yellowLow: urgentLow !== undefined && normalGe !== undefined ? { min: urgentLow + 0.1, max: normalGe - 0.1 } : undefined,
+      yellowHigh: urgentHigh !== undefined && normalLe !== undefined ? { min: normalLe + 0.1, max: urgentHigh } : undefined,
+      redLow: urgentLow,
+      redHigh: urgentHigh,
+      yDomain,
+      description: `${def.name} nominal range: ${def.text.normal} ${def.unit}. ${def.whyItMatters}`,
+    };
+  }, [selectedIndicator]);
 
-      demoRecords.push({
-        id: `REC-DEMO-EXP-${index + 1}`,
-        timestamp: date.toISOString(),
-        missionDay,
-        astronautId: profile.id,
-        values: parsedValues,
-        results,
-        overall,
-        isDemonstrationData: true,
-      });
-    });
-
-    // Merge demo records with any non-demo real records
+  // Load 14 days of realistic sample demonstration telemetry
+  const handleLoadDemoData = () => {
     const realRecords = records.filter((r) => !r.isDemonstrationData);
-    const updated = [...demoRecords, ...realRecords].sort(
+    const updated = [...SAMPLE_ASSESSMENT_HISTORY, ...realRecords].sort(
       (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
 
@@ -408,7 +368,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
     }
   };
 
-  // Navigation tab indicator buttons
+  // 12 indicator tabs
   const indicatorsList: Array<{
     id: ChartIndicatorKey;
     name: string;
@@ -417,10 +377,15 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   }> = [
     { id: 'heartRate', name: 'Heart Rate', icon: <Heart className="w-3.5 h-3.5" />, color: 'text-rose-400' },
     { id: 'bloodPressure', name: 'Blood Pressure', icon: <Activity className="w-3.5 h-3.5" />, color: 'text-cyan-400' },
-    { id: 'bloodSugar', name: 'Blood Sugar', icon: <Droplets className="w-3.5 h-3.5" />, color: 'text-amber-400' },
+    { id: 'respiratoryRate', name: 'Respiration', icon: <Wind className="w-3.5 h-3.5" />, color: 'text-cyan-300' },
+    { id: 'spo2', name: 'SpO2', icon: <Droplets className="w-3.5 h-3.5" />, color: 'text-sky-400' },
     { id: 'bodyTemperature', name: 'Temperature', icon: <Thermometer className="w-3.5 h-3.5" />, color: 'text-orange-400' },
-    { id: 'sleepDuration', name: 'Sleep', icon: <Moon className="w-3.5 h-3.5" />, color: 'text-indigo-400' },
-    { id: 'mood', name: 'Mood / Readiness', icon: <Smile className="w-3.5 h-3.5" />, color: 'text-emerald-400' },
+    { id: 'fastingGlucose', name: 'Glucose', icon: <Zap className="w-3.5 h-3.5" />, color: 'text-amber-400' },
+    { id: 'sleepHours', name: 'Sleep', icon: <Moon className="w-3.5 h-3.5" />, color: 'text-indigo-400' },
+    { id: 'cabinCO2', name: 'Cabin CO2', icon: <Radio className="w-3.5 h-3.5" />, color: 'text-emerald-400' },
+    { id: 'radiationDose', name: 'Radiation', icon: <Zap className="w-3.5 h-3.5" />, color: 'text-amber-500' },
+    { id: 'exerciseMinutes', name: 'Exercise', icon: <Dumbbell className="w-3.5 h-3.5" />, color: 'text-teal-400' },
+    { id: 'mood', name: 'Mood', icon: <Smile className="w-3.5 h-3.5" />, color: 'text-emerald-300' },
   ];
 
   const demoCount = records.filter((r) => r.isDemonstrationData).length;
@@ -437,6 +402,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
         <div className="flex items-center gap-2">
           {demoCount > 0 ? (
             <button
+              type="button"
               onClick={handleClearDemoData}
               className="px-2.5 py-1 rounded-lg text-xs font-mono bg-rose-950/60 border border-rose-500/40 text-rose-300 hover:bg-rose-900/60 flex items-center gap-1.5 transition-all"
               title="Remove sample demonstration records"
@@ -446,12 +412,13 @@ export const TrendChart: React.FC<TrendChartProps> = ({
             </button>
           ) : (
             <button
+              type="button"
               onClick={handleLoadDemoData}
               className="px-2.5 py-1 rounded-lg text-xs font-mono bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-900/60 flex items-center gap-1.5 transition-all shadow-neon-cyan/15"
-              title="Load 12 days of realistic sample astronaut telemetry"
+              title="Load 14 days of realistic sample astronaut telemetry"
             >
               <PlusCircle className="w-3 h-3 text-cyan-400" />
-              <span>Load 12-Day Demo</span>
+              <span>Load 14-Day Demo</span>
             </button>
           )}
         </div>
@@ -460,13 +427,13 @@ export const TrendChart: React.FC<TrendChartProps> = ({
       <div className="space-y-4">
         {/* Controls Toolbar: Indicator Tabs & Data Source Filter */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
-          
           {/* Indicator selection tabs */}
           <div className="flex flex-wrap items-center gap-1.5">
             {indicatorsList.map((ind) => {
               const isSelected = selectedIndicator === ind.id;
               return (
                 <button
+                  type="button"
                   key={ind.id}
                   onClick={() => setSelectedIndicator(ind.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
@@ -488,6 +455,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
               <SlidersHorizontal className="w-3 h-3 text-cyan-400" /> Scope:
             </span>
             <button
+              type="button"
               onClick={() => setFilterDemoOnly('all')}
               className={`px-2 py-0.5 rounded transition-all ${
                 filterDemoOnly === 'all'
@@ -498,6 +466,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
               All ({records.length})
             </button>
             <button
+              type="button"
               onClick={() => setFilterDemoOnly('real')}
               className={`px-2 py-0.5 rounded transition-all ${
                 filterDemoOnly === 'real'
@@ -508,6 +477,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
               Logged ({realCount})
             </button>
             <button
+              type="button"
               onClick={() => setFilterDemoOnly('demo')}
               className={`px-2 py-0.5 rounded transition-all ${
                 filterDemoOnly === 'demo'
@@ -531,21 +501,21 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 No Telemetry Records Available
               </h4>
               <p className="text-xs text-slate-400 max-w-md mx-auto">
-                No matching health assessments were found for this indicator. You can initialize 12 days of realistic sample demonstration telemetry or complete today&apos;s check-in form.
+                No matching health assessments were found for this indicator. You can initialize 14 days of realistic sample demonstration telemetry or complete today&apos;s check-in form.
               </p>
             </div>
             <button
+              type="button"
               onClick={handleLoadDemoData}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-medium text-xs hover:from-cyan-500 hover:to-blue-500 shadow-neon-cyan/20 transition-all"
             >
               <RefreshCw className="w-3.5 h-3.5" />
-              <span>Load 12-Day Demonstration Telemetry</span>
+              <span>Load 14-Day Demonstration Telemetry</span>
             </button>
           </div>
         ) : (
           /* CHART CANVAS */
           <div className="space-y-3">
-            
             {/* Header info bar for active indicator */}
             <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-lg bg-space-950/70 border border-slate-800 text-xs font-mono">
               <div className="flex items-center gap-2">
@@ -554,17 +524,17 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 <span className="text-slate-400">({bandConfig.unit})</span>
               </div>
               <div className="text-slate-400 text-[11px]">
-                Nominal Range: <span className="text-emerald-400 font-semibold">{bandConfig.green.min} – {bandConfig.green.max} {bandConfig.unit}</span>
+                Nominal Range:{' '}
+                <span className="text-emerald-400 font-semibold">
+                  {bandConfig.green.min} – {bandConfig.green.max} {bandConfig.unit}
+                </span>
               </div>
             </div>
 
             {/* Recharts Container */}
             <div className="w-full h-80 sm:h-96 rounded-xl bg-space-950/90 border border-slate-800/80 p-2 sm:p-4">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={chartData}
-                  margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
-                >
+                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
                   <CartesianGrid stroke="#1e293b" strokeDasharray="3 3" opacity={0.6} />
 
                   <XAxis
@@ -584,11 +554,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                     unit={` ${bandConfig.unit}`}
                   />
 
-                  {/* ======================================================= */}
-                  {/* DYNAMIC SHADED REFERENCE BANDS (FROM THRESHOLDS CONFIG) */}
-                  {/* ======================================================= */}
-                  
-                  {/* Green Nominal Band */}
+                  {/* Shaded Reference Bands */}
                   <ReferenceArea
                     y1={bandConfig.green.min}
                     y2={bandConfig.green.max}
@@ -599,7 +565,6 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                     strokeDasharray="2 2"
                   />
 
-                  {/* Yellow Warning Low Band */}
                   {bandConfig.yellowLow && (
                     <ReferenceArea
                       y1={bandConfig.yellowLow.min}
@@ -612,7 +577,6 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                     />
                   )}
 
-                  {/* Yellow Warning High Band */}
                   {bandConfig.yellowHigh && (
                     <ReferenceArea
                       y1={bandConfig.yellowHigh.min}
@@ -625,26 +589,24 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                     />
                   )}
 
-                  {/* Red Critical Low Band */}
                   {bandConfig.redLow !== undefined && (
                     <ReferenceArea
                       y1={bandConfig.yDomain[0]}
                       y2={bandConfig.redLow}
                       fill="#ef4444"
-                      fillOpacity={0.10}
+                      fillOpacity={0.1}
                       stroke="#ef4444"
                       strokeOpacity={0.3}
                       strokeDasharray="2 2"
                     />
                   )}
 
-                  {/* Red Critical High Band */}
                   {bandConfig.redHigh !== undefined && (
                     <ReferenceArea
                       y1={bandConfig.redHigh}
                       y2={bandConfig.yDomain[1]}
                       fill="#ef4444"
-                      fillOpacity={0.10}
+                      fillOpacity={0.1}
                       stroke="#ef4444"
                       strokeOpacity={0.3}
                       strokeDasharray="2 2"
@@ -756,7 +718,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
 
               <div className="flex items-center gap-1.5 text-slate-400">
                 <Info className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                <span>Ranges derived from `src/config/thresholds.ts`</span>
+                <span>Ranges derived from `src/data/research/indicators.json`</span>
               </div>
             </div>
           </div>
@@ -765,4 +727,3 @@ export const TrendChart: React.FC<TrendChartProps> = ({
     </Card>
   );
 };
-

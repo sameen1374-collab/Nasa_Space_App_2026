@@ -1,0 +1,290 @@
+{
+  "meta": {
+    "title": "Sources (Part 3 of the research doc)",
+    "preparedBy": "Eman Saleem",
+    "reviewStatus": "draft - sources being verified",
+    "note": "Categories 'Space Apps challenge and rules' are for the team, not health evidence: do not show them as health references in the app."
+  },
+  "sources": [
+    {
+      "id": 1,
+      "category": "NASA Human Research Program",
+      "name": "NASA Human Research Program: 5 Hazards of Human Spaceflight",
+      "usedFor": "Radiation, isolation, distance, gravity, closed environment",
+      "url": "https://www.nasa.gov/hrp/hazards/",
+      "showInApp": true
+    },
+    {
+      "id": 2,
+      "category": "NASA Human Research Program",
+      "name": "NASA Human Research Program: Risks of Human Spaceflight",
+      "usedFor": "List of all HRP risks with links",
+      "url": "https://www.nasa.gov/hrp/risks/",
+      "showInApp": true
+    },
+    {
+      "id": 3,
+      "category": "NASA Human Research Program",
+      "name": "NASA HRP: Risk of Cardiovascular Adaptations",
+      "usedFor": "Why heart rate and blood pressure matter in space",
+      "url": "https://www.nasa.gov/reference/risk-of-cardiovascular-adaptations/",
+      "showInApp": true
+    },
+    {
+      "id": 4,
+      "category": "NASA Human Research Program",
+      "name": "NASA HRP: Risk of Altered Immune System Responses",
+      "usedFor": "Why temperature / infection signs matter",
+      "url": "https://www.nasa.gov/reference/risk-of-altered-immune-system-responses/",
+      "showInApp": true
+    },
+    {
+      "id": 5,
+      "category": "NASA Human Research Program",
+      "name": "NASA HRP: Risk of Hypoxia",
+      "usedFor": "Why SpO2 and breathing rate matter",
+      "url": "https://www.nasa.gov/reference/risk-of-hypoxia/",
+      "showInApp": true
+    },
+    {
+      "id": 6,
+      "category": "NASA Human Research Program",
+      "name": "NASA HRP: Risk from Inadequate Sleep and Irregular Schedules",
+      "usedFor": "Sleep risk; 16 sunrises/sunsets per day on ISS",
+      "url": "https://www.nasa.gov/reference/risk-from-inadequate-sleep-and-irregular-schedules/",
+      "showInApp": true
+    },
+    {
+      "id": 7,
+      "category": "NASA Human Research Program",
+      "name": "NASA HRP: Risk of Spaceflight-Induced Bone Changes",
+      "usedFor": "Why exercise and bone matter",
+      "url": "https://www.nasa.gov/reference/risk-of-spaceflight-induced-bone-changes/",
+      "showInApp": true
+    },
+    {
+      "id": 8,
+      "category": "NASA Human Research Program",
+      "name": "NASA HRP: Risk of Behavioral Conditions and Psychiatric Disorders",
+      "usedFor": "Why mood / stress check-in matters",
+      "url": "https://www.nasa.gov/reference/risk-of-behavioral-conditions-and-psychiatric-disorders/",
+      "showInApp": true
+    },
+    {
+      "id": 9,
+      "category": "NASA Human Research Program",
+      "name": "NASA HRP: Risk of Inadequate Food and Nutrition",
+      "usedFor": "Why diet / blood sugar can matter",
+      "url": "https://www.nasa.gov/reference/risk-of-inadequate-food-and-nutrition/",
+      "showInApp": true
+    },
+    {
+      "id": 10,
+      "category": "NASA Human Research Program",
+      "name": "NASA HRP: Risk of Spaceflight Associated Neuro-ocular Syndrome (SANS)",
+      "usedFor": "Why headache / vision change symptoms matter",
+      "url": "https://www.nasa.gov/reference/risk-of-spaceflight-associated-neuro-ocular-syndrome-sans/",
+      "showInApp": true
+    },
+    {
+      "id": 11,
+      "category": "NASA Human Research Program",
+      "name": "NASA HRP: Spaceflight Standard Measures",
+      "usedFor": "What NASA measures on every ISS crew member",
+      "url": "https://www.nasa.gov/humans-in-space/spaceflight-standard-measures-characterizing-how-humans-adapt-in-space",
+      "showInApp": true
+    },
+    {
+      "id": 12,
+      "category": "NASA Human Research Program",
+      "name": "NASA: NASA's Twins Study Results Published",
+      "usedFor": "1-year mission story for the presentation",
+      "url": "https://www.nasa.gov/humans-in-space/nasas-twins-study-results-published-in-science-journal/",
+      "showInApp": true
+    },
+    {
+      "id": 13,
+      "category": "NASA standards and technical reports",
+      "name": "NASA OCHMO: NASA-STD-3001 Volume 1: Crew Health",
+      "usedFor": "NASA's official crew health standard",
+      "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+      "showInApp": true
+    },
+    {
+      "id": 14,
+      "category": "NASA standards and technical reports",
+      "name": "NASA OCHMO: OCHMO Human Spaceflight Standards + Technical Briefs",
+      "usedFor": "Library of short technical briefs",
+      "url": "https://www.nasa.gov/ochmo/health-operations-and-oversight/hsa-standards/",
+      "showInApp": true
+    },
+    {
+      "id": 15,
+      "category": "NASA standards and technical reports",
+      "name": "NASA OCHMO: Technical Brief OCHMO-TB-004: Carbon Dioxide",
+      "usedFor": "CO2 limit 3 mmHg (1-hr avg); symptoms at 2.8-4.5 and >4.5 mmHg",
+      "url": "https://www.nasa.gov/ochmo-tb-004-carbon-dioxide-2/",
+      "showInApp": true
+    },
+    {
+      "id": 16,
+      "category": "NASA standards and technical reports",
+      "name": "NASA OCHMO: Technical Brief OCHMO-TB-020: Design for Ionizing Radiation Protection",
+      "usedFor": "Career limit <600 mSv; solar particle event limit 250 mSv",
+      "url": "https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf",
+      "showInApp": true
+    },
+    {
+      "id": 17,
+      "category": "NASA standards and technical reports",
+      "name": "NASA NTRS: Crew Health Care System (CHeCS) report",
+      "usedFor": "ISS medical kit includes blood pressure cuffs (Medical Diagnostics Pack)",
+      "url": "https://ntrs.nasa.gov/api/citations/20110011351/downloads/20110011351.pdf",
+      "showInApp": true
+    },
+    {
+      "id": 18,
+      "category": "NASA standards and technical reports",
+      "name": "NASA NTRS: Digital Astronaut Project Bone Remodeling Model (1-2% bone loss/month)",
+      "usedFor": "Bone mass loss 1-2% per month in microgravity",
+      "url": "https://ntrs.nasa.gov/citations/20140006747",
+      "showInApp": true
+    },
+    {
+      "id": 19,
+      "category": "NASA standards and technical reports",
+      "name": "NASA: NASA Open Science Data Repository (OSDR)",
+      "usedFor": "Public space biology data (mostly non-human)",
+      "url": "https://osdr.nasa.gov/",
+      "showInApp": true
+    },
+    {
+      "id": 20,
+      "category": "Other space agencies (ESA, JAXA, CSA)",
+      "name": "European Space Agency (ESA): Space medicine",
+      "usedFor": "ESA overview of astronaut health and space medicine",
+      "url": "https://www.esa.int/About_Us/Welcome_to_ESA/Space_medicine",
+      "showInApp": true
+    },
+    {
+      "id": 21,
+      "category": "Other space agencies (ESA, JAXA, CSA)",
+      "name": "JAXA: Bone loss research (health benefits)",
+      "usedFor": "Bone loss in space ~10x rate of osteoporosis",
+      "url": "https://iss.jaxa.jp/en/iss/benefits/health/2boneloss",
+      "showInApp": true
+    },
+    {
+      "id": 22,
+      "category": "Other space agencies (ESA, JAXA, CSA)",
+      "name": "JAXA: Bisphosphonates as a Countermeasure to Bone Loss",
+      "usedFor": "ISS crew exercise 2 hours a day",
+      "url": "https://iss.jaxa.jp/en/kiboexp/theme/first/bisphosphonates/",
+      "showInApp": true
+    },
+    {
+      "id": 23,
+      "category": "Other space agencies (ESA, JAXA, CSA)",
+      "name": "Canadian Space Agency (CSA): Bio-Monitor: Keeping an eye on astronauts' vital signs",
+      "usedFor": "Wearable smart shirt that records vital signs on the ISS",
+      "url": "https://asc-csa.gc.ca/eng/sciences/bio-monitor.asp",
+      "showInApp": true
+    },
+    {
+      "id": 24,
+      "category": "Medical reference ranges",
+      "name": "NIH MedlinePlus: Vital signs (Medical Encyclopedia)",
+      "usedFor": "Normal adult resting ranges: BP, breathing, pulse, temperature",
+      "url": "https://medlineplus.gov/ency/article/002341.htm",
+      "showInApp": true
+    },
+    {
+      "id": 25,
+      "category": "Medical reference ranges",
+      "name": "Royal College of Physicians: NEWS2 Chart 1: The NEWS scoring system",
+      "usedFor": "Clinical warning bands for HR, breathing, SpO2, BP, temperature",
+      "url": "https://www.rcp.ac.uk/media/alxev00t/news2-chart-1_the-news-scoring-system_0_0.pdf",
+      "showInApp": true
+    },
+    {
+      "id": 26,
+      "category": "Medical reference ranges",
+      "name": "American Heart Association: Understanding Blood Pressure Readings",
+      "usedFor": "BP categories: normal <120/80 ... crisis >180/120",
+      "url": "https://www.heart.org/bplevels",
+      "showInApp": true
+    },
+    {
+      "id": 27,
+      "category": "Medical reference ranges",
+      "name": "CDC: Diabetes Testing",
+      "usedFor": "Fasting sugar: normal <=99, prediabetes 100-125, diabetes >=126 mg/dL",
+      "url": "https://www.cdc.gov/diabetes/diabetes-testing/index.html",
+      "showInApp": true
+    },
+    {
+      "id": 28,
+      "category": "Medical reference ranges",
+      "name": "CDC: Low Blood Sugar (Hypoglycemia)",
+      "usedFor": "Low <70 mg/dL; severe <54 mg/dL",
+      "url": "https://www.cdc.gov/diabetes/about/low-blood-sugar-hypoglycemia.html",
+      "showInApp": true
+    },
+    {
+      "id": 29,
+      "category": "Medical reference ranges",
+      "name": "CDC: 1 in 3 adults don't get enough sleep (healthy = 7+ hours)",
+      "usedFor": "Healthy adult sleep = 7 or more hours",
+      "url": "https://archive.cdc.gov/www_cdc_gov/media/releases/2016/p0215-enough-sleep.html",
+      "showInApp": true
+    },
+    {
+      "id": 30,
+      "category": "Medical reference ranges",
+      "name": "Lancet Neurology: Barger et al. 2014, Sleep deficiency in astronauts (NASA-funded)",
+      "usedFor": "Astronauts averaged ~6 h sleep vs 8.5 h scheduled",
+      "url": "https://doi.org/10.1016/S1474-4422(14)70122-X",
+      "showInApp": true
+    },
+    {
+      "id": 31,
+      "category": "Space Apps challenge and rules",
+      "name": "NASA Space Apps: Space Apps 2026 challenge: Create Health Monitoring Software for Astronauts on Space Missions",
+      "usedFor": "Official challenge + its Resources list (judges' own links). Open this first and copy every resource link.",
+      "url": "https://www.spaceappschallenge.org/2026/challenges/create-health-monitoring-software-for-astronauts-on-space-missions/",
+      "showInApp": false
+    },
+    {
+      "id": 32,
+      "category": "Space Apps challenge and rules",
+      "name": "NASA Space Apps: 2026 NASA Space Apps Challenge (timeline)",
+      "usedFor": "Dates: hackathon Nov 14-15, submission closes Nov 15 11:59 PM local",
+      "url": "https://www.spaceappschallenge.org/2026/",
+      "showInApp": false
+    },
+    {
+      "id": 33,
+      "category": "Space Apps challenge and rules",
+      "name": "NASA Space Apps: Participant FAQs / Important Dates",
+      "usedFor": "Nov 13 = Global Offers + Submission and Judging guides released",
+      "url": "https://www.spaceappschallenge.org/resources/participant-faqs/",
+      "showInApp": false
+    },
+    {
+      "id": 34,
+      "category": "Space Apps challenge and rules",
+      "name": "NASA Space Apps: Judging & Awards Guide",
+      "usedFor": "5 judging criteria; References field rule; English rule",
+      "url": "https://spaceappschallenge.org/resources/judging-awards-guide",
+      "showInApp": false
+    },
+    {
+      "id": 35,
+      "category": "Space Apps challenge and rules",
+      "name": "NASA Space Apps: Project Submission Guide",
+      "usedFor": "Demo format (last year: 30 s video or 7 slides). Re-check 2026 version on Nov 13",
+      "url": "https://www.spaceappschallenge.org/resources/project-submission-guide/",
+      "showInApp": false
+    }
+  ]
+}

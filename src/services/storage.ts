@@ -30,7 +30,15 @@ export function getStoredAssessments(): DailyAssessmentRecord[] {
       saveAssessmentsToStorage(SAMPLE_ASSESSMENT_HISTORY);
       return SAMPLE_ASSESSMENT_HISTORY;
     }
-    return parsed;
+    // Ensure records are always sorted newest first (by timestamp descending, Sol descending)
+    return parsed.sort((a, b) => {
+      const timeA = new Date(a.timestamp).getTime();
+      const timeB = new Date(b.timestamp).getTime();
+      if (!isNaN(timeA) && !isNaN(timeB) && timeA !== timeB) {
+        return timeB - timeA;
+      }
+      return b.missionDay - a.missionDay;
+    });
   } catch (err) {
     console.error('[Aegis Storage] Failed reading records from LocalStorage:', err);
     return SAMPLE_ASSESSMENT_HISTORY;
@@ -53,7 +61,15 @@ export function saveAssessmentsToStorage(records: DailyAssessmentRecord[]): void
  */
 export function saveAssessment(record: DailyAssessmentRecord): DailyAssessmentRecord[] {
   const current = getStoredAssessments();
-  const updated = [record, ...current];
+  const filtered = current.filter((r) => r.id !== record.id);
+  const updated = [record, ...filtered].sort((a, b) => {
+    const timeA = new Date(a.timestamp).getTime();
+    const timeB = new Date(b.timestamp).getTime();
+    if (!isNaN(timeA) && !isNaN(timeB) && timeA !== timeB) {
+      return timeB - timeA;
+    }
+    return b.missionDay - a.missionDay;
+  });
   saveAssessmentsToStorage(updated);
   return updated;
 }
@@ -67,20 +83,25 @@ export function getAssessmentById(id: string): DailyAssessmentRecord | undefined
 }
 
 /**
- * Gets the most recent submitted assessment record
+ * Gets the most recent submitted assessment record.
+ * Prioritizes actual astronaut check-ins over demonstration seed records.
  */
 export function getLatestAssessment(): DailyAssessmentRecord | undefined {
   const all = getStoredAssessments();
-  return all.length > 0 ? all[0] : undefined;
+  if (all.length === 0) return undefined;
+  const realRecords = all.filter((r) => !r.isDemonstrationData);
+  return (realRecords.length > 0 ? realRecords : all)[0];
 }
 
 /**
- * Checks if an assessment was completed on the current mission day
+ * Checks if a real assessment was completed on the current mission day
  */
 export function hasCompletedTodayAssessment(currentMissionDay: number): boolean {
-  const latest = getLatestAssessment();
-  if (!latest) return false;
-  return latest.missionDay === currentMissionDay;
+  const all = getStoredAssessments();
+  const realToday = all.find(
+    (r) => !r.isDemonstrationData && r.missionDay === currentMissionDay
+  );
+  return !!realToday;
 }
 
 /**
@@ -109,6 +130,17 @@ export function saveAstronautProfile(profile: AstronautProfile): void {
   } catch (err) {
     console.error('[Aegis Storage] Failed saving profile to LocalStorage:', err);
   }
+}
+
+/**
+ * Computes running cumulative career radiation dose:
+ * astronaut baseline (default 0) + sum of all daily doses entered in history
+ */
+export function getCumulativeRadiationDose(profile: AstronautProfile, additionalTodayDose: number = 0): number {
+  const records = getStoredAssessments();
+  const pastDailyDoses = records.reduce((sum, r) => sum + (r.values.radiationDose || 0), 0);
+  const baseline = profile.previousCareerRadiationDose || 0;
+  return Number((baseline + pastDailyDoses + additionalTodayDose).toFixed(2));
 }
 
 /**

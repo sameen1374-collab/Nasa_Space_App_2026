@@ -1,0 +1,147 @@
+{
+  "meta": {
+    "title": "NASA hazards, health effects and open gaps",
+    "sourceFile": "nasa_final.xlsx",
+    "reviewStatus": "draft - re-check vs NASA resources (Nov 13)",
+    "note": "devHint_* fields are suggestions by the developer, not from the research."
+  },
+  "hazards": [
+    {
+      "hazard": "Space radiation",
+      "effectOnBody": "Raises cancer risk and can damage the central nervous system (cognition, motor function, behavior)",
+      "countermeasure": "Protective shielding, dosimetry, alerts; research into medical countermeasures",
+      "sourceName": "NASA HRP Hazards (also Space.com, GPSDaily summaries)",
+      "sourceUrl": "https://www.nasa.gov/hrp/hazards",
+      "reviewStatus": "Draft - re-check vs NASA resources (Nov 13)",
+      "id": "space-radiation"
+    },
+    {
+      "hazard": "Isolation and confinement",
+      "effectOnBody": "Behavioral issues are expected when groups are confined for long periods",
+      "countermeasure": "Lighting, movement and sleep help protect mental health",
+      "sourceName": "NASA HRP Risks",
+      "sourceUrl": "https://www.nasa.gov/hrp/risks",
+      "reviewStatus": "Draft - re-check vs NASA resources (Nov 13)",
+      "id": "isolation-and-confinement"
+    },
+    {
+      "hazard": "Distance from Earth",
+      "effectOnBody": "About 20-minute communication delay each way to Mars; evacuation not an option",
+      "countermeasure": "Crew medical autonomy and ground medical support",
+      "sourceName": "NASA OCHMO-TB-033 (NASA-STD-3001)",
+      "sourceUrl": "https://www.nasa.gov/wp-content/uploads/2023/07/ochmo-tb-033-spaceflight-experience-medical-care-rev-c.pdf",
+      "reviewStatus": "Draft - re-check vs NASA resources (Nov 13)",
+      "id": "distance-from-earth"
+    },
+    {
+      "hazard": "Altered gravity",
+      "effectOnBody": "Affects hand-eye coordination, balance, movement and sense of space",
+      "countermeasure": "ISS astronauts exercise at least 2 hours/day (treadmill, ergometer, resistance equipment)",
+      "sourceName": "JAXA in-flight health management",
+      "sourceUrl": "https://humans-in-space.jaxa.jp/en/biz-lab/med-in-space/healthcare/medops/system",
+      "reviewStatus": "Draft - re-check vs NASA resources (Nov 13)",
+      "id": "altered-gravity"
+    },
+    {
+      "hazard": "Hostile Environment",
+      "effectOnBody": "Spacecraft is a machine as well as a home; its ecosystem shapes daily life",
+      "countermeasure": "Extensive recycling of oxygen, water, carbon dioxide and waste",
+      "sourceName": "SpaceDaily/GPSDaily, 5 Hazards (JSC News)",
+      "sourceUrl": "https://www.gpsdaily.com/reports/5_Hazards_of_Human_Spaceflight_999.html",
+      "reviewStatus": "Draft - re-check vs NASA resources (Nov 13)",
+      "id": "hostile-environment"
+    }
+  ],
+  "healthEffects": [
+    {
+      "healthArea": "Bone",
+      "effect": "Without gravity, bones break down and become more brittle, raising the chance of breaks",
+      "countermeasure": "Diet, exercise and medication",
+      "sourceName": "NASA HRP Risks",
+      "sourceUrl": "https://www.nasa.gov/hrp/risks",
+      "reviewStatus": "Draft - re-check vs NASA resources (Nov 13)",
+      "devHint_bodySystemsAndIndicators": [
+        "skeletal",
+        "exerciseMinutes"
+      ]
+    },
+    {
+      "healthArea": "Cardiovascular",
+      "effect": "Weightlessness alters circulation and heart function, possibly raising cardiovascular event risk",
+      "countermeasure": "Exercise; one study estimates up to 17% of astronauts could still have performance-limiting deconditioning",
+      "sourceName": "npj Microgravity 2023 (PMC)",
+      "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9898566",
+      "reviewStatus": "Draft - re-check vs NASA resources (Nov 13)",
+      "devHint_bodySystemsAndIndicators": [
+        "cardiovascular",
+        "heartRate",
+        "systolicBP",
+        "diastolicBP"
+      ]
+    },
+    {
+      "healthArea": "Immune",
+      "effect": "Spaceflight stress can reactivate dormant viruses, causing rashes and other symptoms",
+      "countermeasure": "Ongoing research",
+      "sourceName": "NASA HRP Risks",
+      "sourceUrl": "https://www.nasa.gov/hrp/risks",
+      "reviewStatus": "Draft - re-check vs NASA resources (Nov 13)",
+      "devHint_bodySystemsAndIndicators": [
+        "lymphatic/immune",
+        "bodyTemperature"
+      ]
+    },
+    {
+      "healthArea": "Behavioral health",
+      "effect": "Isolation, radiation, distance and other stressors can harm crew mental health",
+      "countermeasure": "Sleep, lighting, monitoring",
+      "sourceName": "NASA HRP Risks",
+      "sourceUrl": "https://www.nasa.gov/hrp/risks",
+      "reviewStatus": "Draft - re-check vs NASA resources (Nov 13)",
+      "devHint_bodySystemsAndIndicators": [
+        "nervous/brain",
+        "mood",
+        "sleepHours"
+      ]
+    },
+    {
+      "healthArea": "Nutrition",
+      "effect": "Nutrient stability over long missions is a concern",
+      "countermeasure": "Better food formulation, processing, packaging and preservation",
+      "sourceName": "Space.com (citing NASA HRP)",
+      "sourceUrl": "https://www.space.com/42918-big-space-risks-mars-astronauts-videos.html",
+      "reviewStatus": "Draft - re-check vs NASA resources (Nov 13)",
+      "devHint_bodySystemsAndIndicators": [
+        "digestive",
+        "fastingGlucose"
+      ]
+    },
+    {
+      "healthArea": "Vision (SANS)",
+      "effect": "Eye changes such as disc edema, choroidal folds and globe flattening",
+      "countermeasure": "Pharmaceutical options and exercise",
+      "sourceName": "NASA OCHMO-TB-033 (NASA-STD-3001)",
+      "sourceUrl": "https://www.nasa.gov/wp-content/uploads/2023/07/ochmo-tb-033-spaceflight-experience-medical-care-rev-c.pdf",
+      "reviewStatus": "Draft - re-check vs NASA resources (Nov 13)",
+      "devHint_bodySystemsAndIndicators": [
+        "eyes"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "item": "When to contact flight surgeon",
+      "note": "No numeric thresholds found in sources so far; sources only describe the flight surgeon's role. Mark as 'to be confirmed from NASA resources' - do not invent cut-offs.",
+      "referenceRoleOnly": "CSA: role of a flight surgeon",
+      "sourceUrl": "https://asc-csa.gc.ca/eng/astronauts/space-medicine/medical-support.asp",
+      "reviewStatus": "Open - needs NASA resources (Nov 13)"
+    },
+    {
+      "item": "Environment differences (station, rover, lunar/Mars base)",
+      "note": "No single page compares these; search the Human Research Roadmap by risk (e.g. Hostile/Closed Environment hazard).",
+      "referenceRoleOnly": "Human Research Roadmap",
+      "sourceUrl": "https://humanresearchroadmap.nasa.gov/",
+      "reviewStatus": "Open"
+    }
+  ]
+}

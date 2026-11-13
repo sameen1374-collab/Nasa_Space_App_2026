@@ -243,7 +243,7 @@ const TrendsPage: React.FC<{ records: DailyAssessmentRecord[] }> = ({ records })
   const [period, setPeriod] = useState<'1D' | '1W' | '1M' | '3M'>('1W');
 
   const avgHR = records.length > 0 ? Math.round(records.reduce((a, r) => a + r.values.heartRate, 0) / records.length) : 0;
-  const avgSleep = records.length > 0 ? (records.reduce((a, r) => a + r.values.sleepDuration, 0) / records.length).toFixed(1) : '0';
+  const avgSleep = records.length > 0 ? (records.reduce((a, r) => a + (r.values.sleepHours ?? r.values.sleepDuration ?? 0), 0) / records.length).toFixed(1) : '0';
   const avgScore = records.length > 0 ? Math.round(records.reduce((a, r) => a + r.overall.score, 0) / records.length) : 0;
 
   return (

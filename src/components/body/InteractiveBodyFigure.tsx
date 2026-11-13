@@ -47,7 +47,11 @@ export const InteractiveBodyFigure: React.FC<InteractiveBodyFigureProps> = ({
       name: 'Cranial & Neuro-Vestibular System',
       system: 'Central Nervous System & Circadian Axis',
       relatedIndicator: 'Mood & Sleep Duration',
-      reading: `${latestAssessment?.results.mood.valueDisplay || 'Good'} • ${latestAssessment?.results.sleepDuration.valueDisplay || '7.5'} hrs sleep`,
+      reading: `${latestAssessment?.results.mood?.valueDisplay || 'Good'} • ${
+        (latestAssessment?.values.sleepHours ?? latestAssessment?.values.sleepDuration) !== undefined
+          ? `${latestAssessment?.values.sleepHours ?? latestAssessment?.values.sleepDuration} hrs sleep`
+          : 'Sleep not recorded'
+      }`,
       status: moodStatus === 'RED' ? 'RED' : moodStatus === 'YELLOW' ? 'YELLOW' : 'GREEN',
       statusLabel: latestAssessment?.results.mood.statusLabel || 'Nominal',
       microgravityHazard: 'Cephalic fluid shift increases intracranial pressure (SANS risk). 16 orbital sunrises/day disrupts circadian sleep architecture.',

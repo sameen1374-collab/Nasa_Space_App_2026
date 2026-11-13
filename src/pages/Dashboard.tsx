@@ -28,7 +28,10 @@ import {
   FileText,
   X,
   ArrowRight,
+  AlertTriangle,
+  AlertOctagon,
 } from 'lucide-react';
+import { getHealthScoreTier } from '../config/thresholds';
 
 interface DashboardProps {
   profile: AstronautProfile;
@@ -63,24 +66,44 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const driftAlerts = analyzePhysiologicalDrift(historyRecords, profile);
 
-  // Active biometrics with nominal fallbacks exactly matching 01_dashboard.png
-  const v = latestAssessment?.values || {
-    heartRate: 72,
-    systolic: 118,
-    diastolic: 76,
-    bloodSugar: 92,
-    bodyTemperature: 36.6,
-    sleepDuration: 7.75, // 7h 45m
-    mood: 'good' as const,
-  };
+  // Active telemetry values read directly from the assessment (NO demo / placeholder number fallbacks)
+  const rawV = latestAssessment?.values;
+  const hasHR = rawV?.heartRate !== undefined;
+  const sysVal = rawV?.systolicBP ?? rawV?.systolic;
+  const diaVal = rawV?.diastolicBP ?? rawV?.diastolic;
+  const hasBP = sysVal !== undefined && diaVal !== undefined;
+  const glucoseVal = rawV?.fastingGlucose ?? rawV?.bloodSugar;
+  const hasGlucose = glucoseVal !== undefined;
+  const hasTemp = rawV?.bodyTemperature !== undefined;
+  const sleepVal = rawV?.sleepHours ?? rawV?.sleepDuration;
+  const hasSleep = sleepVal !== undefined;
 
-  const score = latestAssessment?.overall.score ?? 95;
-  const isHealthy = !latestAssessment || latestAssessment.overall.status === 'GREEN';
+  // Format entered sleep duration to "7h 30m" (or "Not recorded")
+  const sleepDisplay = hasSleep
+    ? `${Math.floor(sleepVal)}h ${Math.round((sleepVal % 1) * 60) > 0 ? `${Math.round((sleepVal % 1) * 60)}m` : '00m'}`
+    : 'Not recorded';
 
-  // Format sleep duration to "7h 45m"
-  const sleepHours = Math.floor(v.sleepDuration);
-  const sleepMins = Math.round((v.sleepDuration % 1) * 60);
-  const sleepDisplay = `${sleepHours}h ${sleepMins > 0 ? `${sleepMins}m` : '00m'}`;
+  // Overall Status & Health Score Tier
+  const overallStatus = latestAssessment?.overall.status ?? 'GREEN';
+  const score = latestAssessment?.overall.score ?? 98;
+  const scoreTier = getHealthScoreTier(score);
+
+  const statusLabel =
+    overallStatus === 'RED'
+      ? (latestAssessment?.overall.statusLabel || 'Urgent Attention Required')
+      : overallStatus === 'YELLOW'
+      ? (latestAssessment?.overall.statusLabel || 'Operational Warning / Monitoring')
+      : 'Healthy / Nominal';
+
+  const statusSummary =
+    latestAssessment?.overall.summary || 'All systems are nominal';
+
+  const ecgPulseColor =
+    overallStatus === 'RED'
+      ? '#f43f5e'
+      : overallStatus === 'YELLOW'
+      ? '#f59e0b'
+      : '#10b981';
 
   return (
     <div className="relative min-h-screen space-y-6 animate-fade-in pb-16 select-none overflow-hidden">
@@ -131,8 +154,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
               <defs>
                 <linearGradient id="scoreRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#10b981" />
-                  <stop offset="100%" stopColor="#06b6d4" />
+                  <stop offset="0%" stopColor={scoreTier.ringColor} />
+                  <stop offset="100%" stopColor={scoreTier.status === 'RED' ? '#ef4444' : scoreTier.status === 'YELLOW' ? '#f59e0b' : '#06b6d4'} />
                 </linearGradient>
                 <filter id="scoreGlow">
                   <feGaussianBlur stdDeviation="3" result="coloredBlur" />
@@ -168,9 +191,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {/* Title & Status */}
           <div className="text-center relative z-10">
             <h3 className="text-base font-bold text-white font-sans tracking-wide">Health Score</h3>
-            <p className="text-xs font-bold text-emerald-400 flex items-center justify-center gap-1.5 mt-1">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-              <span>{isHealthy ? 'Excellent!' : 'Good'}</span>
+            <p className={`text-xs font-bold ${scoreTier.colorClass} flex items-center justify-center gap-1.5 mt-1`}>
+              {scoreTier.status === 'RED' ? (
+                <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
+              ) : scoreTier.status === 'YELLOW' ? (
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+              )}
+              <span>{scoreTier.label}</span>
             </p>
           </div>
         </div>
@@ -187,18 +216,30 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
             {/* Status Pill Badge */}
             <div className="flex items-center gap-3">
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold font-sans">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{isHealthy ? 'Healthy' : 'Caution'}</span>
-              </div>
+              {overallStatus === 'RED' ? (
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-bold font-sans">
+                  <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
+                  <span>{statusLabel}</span>
+                </div>
+              ) : overallStatus === 'YELLOW' ? (
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold font-sans">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{statusLabel}</span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold font-sans">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{statusLabel}</span>
+                </div>
+              )}
             </div>
 
             <p className="text-xs sm:text-sm text-slate-300 font-sans">
-              {isHealthy ? 'All systems are nominal' : latestAssessment?.overall.summary}
+              {statusSummary}
             </p>
           </div>
 
-          {/* Glowing Green ECG Pulse Line (Exact 01_dashboard.png) */}
+          {/* Glowing Dynamic ECG Pulse Line */}
           <div className="w-full h-16 relative flex items-center z-10 my-1">
             <svg viewBox="0 0 320 44" className="w-full h-full" preserveAspectRatio="none">
               <defs>
@@ -210,10 +251,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   </feMerge>
                 </filter>
                 <linearGradient id="ecgPulseColor" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#10b981" stopOpacity="0.4" />
-                  <stop offset="45%" stopColor="#10b981" />
-                  <stop offset="55%" stopColor="#34d399" />
-                  <stop offset="100%" stopColor="#10b981" stopOpacity="0.4" />
+                  <stop offset="0%" stopColor={ecgPulseColor} stopOpacity="0.4" />
+                  <stop offset="45%" stopColor={ecgPulseColor} />
+                  <stop offset="55%" stopColor={ecgPulseColor} />
+                  <stop offset="100%" stopColor={ecgPulseColor} stopOpacity="0.4" />
                 </linearGradient>
               </defs>
               <polyline
@@ -286,10 +327,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
               </div>
               <div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-black text-white">{v.heartRate}</span>
-                  <span className="text-xs text-slate-400 font-medium">bpm</span>
-                </div>
+                {hasHR ? (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xl font-black text-white">{rawV!.heartRate}</span>
+                    <span className="text-xs text-slate-400 font-medium">bpm</span>
+                  </div>
+                ) : (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xs font-semibold text-slate-400">Not recorded</span>
+                  </div>
+                )}
                 <p className="text-[11px] text-slate-400 font-sans mt-1">Heart Rate</p>
               </div>
             </div>
@@ -303,10 +350,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <Droplets className="w-5 h-5 text-cyan-400 fill-cyan-400" />
               </div>
               <div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-base font-black text-white">{v.systolic}/{v.diastolic}</span>
-                  <span className="text-[10px] text-slate-400 font-medium">mmHg</span>
-                </div>
+                {hasBP ? (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-base font-black text-white">{sysVal}/{diaVal}</span>
+                    <span className="text-[10px] text-slate-400 font-medium">mmHg</span>
+                  </div>
+                ) : (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xs font-semibold text-slate-400">Not recorded</span>
+                  </div>
+                )}
                 <p className="text-[11px] text-slate-400 font-sans mt-1">Blood Pressure</p>
               </div>
             </div>
@@ -320,10 +373,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <Box className="w-5 h-5 text-purple-400 fill-purple-400/40" />
               </div>
               <div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-black text-white">{v.bloodSugar}</span>
-                  <span className="text-xs text-slate-400 font-medium">mg/dL</span>
-                </div>
+                {hasGlucose ? (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xl font-black text-white">{glucoseVal}</span>
+                    <span className="text-xs text-slate-400 font-medium">mg/dL</span>
+                  </div>
+                ) : (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xs font-semibold text-slate-400">Not recorded</span>
+                  </div>
+                )}
                 <p className="text-[11px] text-slate-400 font-sans mt-1">Blood Sugar</p>
               </div>
             </div>
@@ -337,10 +396,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <Thermometer className="w-5 h-5 text-amber-400" />
               </div>
               <div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-black text-white">{v.bodyTemperature}</span>
-                  <span className="text-xs text-slate-400 font-medium">°C</span>
-                </div>
+                {hasTemp ? (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xl font-black text-white">{rawV!.bodyTemperature}</span>
+                    <span className="text-xs text-slate-400 font-medium">°C</span>
+                  </div>
+                ) : (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xs font-semibold text-slate-400">Not recorded</span>
+                  </div>
+                )}
                 <p className="text-[11px] text-slate-400 font-sans mt-1">Temperature</p>
               </div>
             </div>
@@ -355,7 +420,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-base font-black text-white">{sleepDisplay}</span>
+                  <span className={`${hasSleep ? 'text-base font-black text-white' : 'text-xs font-semibold text-slate-400'}`}>
+                    {sleepDisplay}
+                  </span>
                 </div>
                 <p className="text-[11px] text-slate-400 font-sans mt-1">Sleep</p>
               </div>

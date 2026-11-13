@@ -57,7 +57,7 @@
     "levelLabel": "Self-care",
     "title": "Nominal Arterial Perfusion",
     "actions": [
-      "Continue standard orbital dietary sodium intake (1.5–2.3 g/day).",
+      "Continue standard orbital dietary sodium intake (1.5\u20132.3 g/day).",
       "Perform scheduled lower-body negative pressure (LBNP) maintenance if in mission rotation.",
       "Record next blood pressure measurement at nominal morning check-in."
     ],
@@ -96,7 +96,7 @@
       "Avoid rapid translational movements across habitat modules to prevent syncope.",
       "Establish direct private medical conference (PMC) with MCC Flight Surgeon."
     ],
-    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately: Systolic ≥ 141 mmHg or ≤ 84 mmHg indicates acute perfusion risk.",
+    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately: Systolic \u2265 141 mmHg or \u2264 84 mmHg indicates acute perfusion risk.",
     "relatedBodyPartId": "heart",
     "source": "To be confirmed by research team",
     "reviewStatus": "PLACEHOLDER"
@@ -180,7 +180,7 @@
       "Drink 400 mL chilled electrolyte water to support core cooling.",
       "Re-measure core body temperature in 2 hours."
     ],
-    "whenToContactFlightSurgeon": "Contact flight surgeon if core temperature exceeds 37.8°C or fails to drop after 2 hours of cooling.",
+    "whenToContactFlightSurgeon": "Contact flight surgeon if core temperature exceeds 37.8\u00b0C or fails to drop after 2 hours of cooling.",
     "remeasureIntervalHours": 2,
     "relatedBodyPartId": "skin",
     "source": "To be confirmed by research team",
@@ -198,7 +198,7 @@
       "Verify ECLSS cabin environmental temperature and humidity readings with ground control.",
       "Initiate immediate Flight Surgeon voice consult for thermal regulation intervention."
     ],
-    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately: Core temperature ≥ 38.0°C indicates systemic infection or severe thermoregulatory failure.",
+    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately: Core temperature \u2265 38.0\u00b0C indicates systemic infection or severe thermoregulatory failure.",
     "relatedBodyPartId": "lung",
     "source": "To be confirmed by research team",
     "reviewStatus": "PLACEHOLDER"
@@ -304,6 +304,446 @@
     "relatedBodyPartId": "brain",
     "source": "To be confirmed by research team",
     "reviewStatus": "PLACEHOLDER"
+  },
+  {
+    "id": "systolicBP-green",
+    "indicatorId": "systolicBP",
+    "level": "GREEN",
+    "levelLabel": "Self-care",
+    "title": "Nominal Systolic Pressure",
+    "actions": [
+      "Maintain standard orbital dietary sodium and hydration routine.",
+      "Log resting blood pressure during nominal morning check-in.",
+      "Continue standard daily countermeasure exercises."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if experiencing sudden visual changes, headache, or dizziness despite nominal readings.",
+    "relatedBodyPartId": "heart",
+    "source": "American Heart Association / NASA HRP",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "systolicBP-yellow",
+    "indicatorId": "systolicBP",
+    "level": "YELLOW",
+    "levelLabel": "Monitor and apply countermeasures",
+    "title": "Sub-nominal / Elevated Systolic Pressure",
+    "actions": [
+      "Rest seated quietly for 10 minutes with arm at heart level.",
+      "Drink 400 mL oral electrolyte solution to support intravascular volume.",
+      "Check cuff placement on bare upper arm and repeat measurement in 2 hours."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if systolic pressure remains in warning band across two consecutive readings.",
+    "remeasureIntervalHours": 2,
+    "relatedBodyPartId": "heart",
+    "source": "American Heart Association / NEWS2",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "systolicBP-red",
+    "indicatorId": "systolicBP",
+    "level": "RED",
+    "levelLabel": "Contact Flight Surgeon",
+    "title": "Critical Systolic Hypertensive / Hypotensive Crisis",
+    "actions": [
+      "Cease all strenuous operations and recline in neutral microgravity posture.",
+      "Notify Crew Medical Officer and verify reading with manual sphygmomanometer.",
+      "Standby for direct Flight Surgeon voice uplink."
+    ],
+    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately: Systolic pressure <= 90 or > 180 mmHg represents an acute perfusion emergency.",
+    "relatedBodyPartId": "heart",
+    "source": "AHA / NEWS2 Chart 1",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "diastolicBP-green",
+    "indicatorId": "diastolicBP",
+    "level": "GREEN",
+    "levelLabel": "Self-care",
+    "title": "Nominal Diastolic Pressure",
+    "actions": [
+      "Continue standard cardiovascular conditioning routine.",
+      "Maintain adequate fluid intake of 2.0 to 2.5 L daily."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if accompanied by chest discomfort or lightheadedness.",
+    "relatedBodyPartId": "heart",
+    "source": "American Heart Association",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "diastolicBP-yellow",
+    "indicatorId": "diastolicBP",
+    "level": "YELLOW",
+    "levelLabel": "Monitor and apply countermeasures",
+    "title": "Diastolic Pressure Departure",
+    "actions": [
+      "Review recent caffeine and sodium intake.",
+      "Perform 15 minutes of lower-body muscle activation.",
+      "Re-measure in 2 hours after 5 minutes of seated rest."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if diastolic pressure remains elevated above 80 mmHg across multiple checks.",
+    "remeasureIntervalHours": 2,
+    "relatedBodyPartId": "heart",
+    "source": "American Heart Association",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "diastolicBP-red",
+    "indicatorId": "diastolicBP",
+    "level": "RED",
+    "levelLabel": "Contact Flight Surgeon",
+    "title": "Severe Diastolic Crisis (>120 mmHg)",
+    "actions": [
+      "Rest in quiet sleep quarters immediately.",
+      "Have CMO verify readings on alternate arm.",
+      "Prepare emergency cardiovascular diagnostic kit."
+    ],
+    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately: Diastolic pressure > 120 mmHg requires urgent medical intervention.",
+    "relatedBodyPartId": "heart",
+    "source": "American Heart Association",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "respiratoryRate-green",
+    "indicatorId": "respiratoryRate",
+    "level": "GREEN",
+    "levelLabel": "Self-care",
+    "title": "Nominal Respiration Rate",
+    "actions": [
+      "Breathing rate 12-20 breaths/min is optimal.",
+      "Continue routine morning vital check-in.",
+      "Ensure crew quarters ventilation diffusers are unobstructed."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if shortness of breath occurs at rest.",
+    "relatedBodyPartId": "lung",
+    "source": "NEWS2 / MedlinePlus",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "respiratoryRate-yellow",
+    "indicatorId": "respiratoryRate",
+    "level": "YELLOW",
+    "levelLabel": "Monitor and apply countermeasures",
+    "title": "Respiratory Variance Advisory",
+    "actions": [
+      "Check vehicle cabin CO2 and O2 telemetry displays.",
+      "Sit comfortably and practice controlled diaphragmatic breathing for 5 minutes.",
+      "Re-measure resting breathing rate in 1 hour."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if breathing rate remains >= 21 or <= 11 breaths/min after rest.",
+    "remeasureIntervalHours": 1,
+    "relatedBodyPartId": "lung",
+    "source": "NEWS2 Chart 1 / NASA HRP",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "respiratoryRate-red",
+    "indicatorId": "respiratoryRate",
+    "level": "RED",
+    "levelLabel": "Contact Flight Surgeon",
+    "title": "Critical Respiratory Distress Alert",
+    "actions": [
+      "Don emergency cabin breathing mask or portable O2 supply if hypoxia suspected.",
+      "Cease all physical exertion and notify Crew Medical Officer immediately.",
+      "Have crewmate check cabin atmospheric scrubbers for toxic contaminants."
+    ],
+    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately: Breathing rate <= 8 or >= 25 breaths/min indicates severe respiratory failure or hypercapnia.",
+    "relatedBodyPartId": "lung",
+    "source": "NEWS2 Chart 1 / NASA HRP",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "spo2-green",
+    "indicatorId": "spo2",
+    "level": "GREEN",
+    "levelLabel": "Self-care",
+    "title": "Optimal Blood Oxygen Saturation",
+    "actions": [
+      "Blood oxygen saturation (>=96%) is optimal for spaceflight operations.",
+      "Maintain standard cabin atmosphere monitoring.",
+      "Log reading before and after any planned extravehicular activity (EVA)."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if SpO2 drops below 96% during routine activities.",
+    "relatedBodyPartId": "lung",
+    "source": "NEWS2 / NASA HRP Hypoxia Risk",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "spo2-yellow",
+    "indicatorId": "spo2",
+    "level": "YELLOW",
+    "levelLabel": "Monitor and apply countermeasures",
+    "title": "Mild Hypoxemia Warning (92-95%)",
+    "actions": [
+      "Warm hands and re-seat pulse oximeter sensor on alternate finger.",
+      "Check vehicle environmental ECLSS oxygen partial pressure reading.",
+      "Take deep rhythmic breaths and re-test in 15 minutes."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if SpO2 fails to rise above 95% after sensor repositioning.",
+    "remeasureIntervalHours": 1,
+    "relatedBodyPartId": "lung",
+    "source": "NEWS2 Chart 1",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "spo2-red",
+    "indicatorId": "spo2",
+    "level": "RED",
+    "levelLabel": "Contact Flight Surgeon",
+    "title": "Critical Hypoxia Alert (<=91%)",
+    "actions": [
+      "Immediately connect to spacecraft emergency medical oxygen mask.",
+      "Cease all physical workload and maintain passive resting posture.",
+      "Crew Medical Officer must confirm reading and monitor mental clarity."
+    ],
+    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately: SpO2 <= 91% represents an acute hypoxemia emergency in spaceflight.",
+    "relatedBodyPartId": "lung",
+    "source": "NEWS2 Chart 1 / NASA HRP",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "fastingGlucose-green",
+    "indicatorId": "fastingGlucose",
+    "level": "GREEN",
+    "levelLabel": "Self-care",
+    "title": "Nominal Fasting Blood Sugar",
+    "actions": [
+      "Fasting glucose of 70-99 mg/dL is within healthy metabolic bounds.",
+      "Maintain planned nutritional macro balance.",
+      "Continue weekly or team-scheduled glucose logging."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if experiencing unexplained dizziness, sweating, or shakiness.",
+    "relatedBodyPartId": "liver",
+    "source": "CDC Diabetes Testing",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "fastingGlucose-yellow",
+    "indicatorId": "fastingGlucose",
+    "level": "YELLOW",
+    "levelLabel": "Monitor and apply countermeasures",
+    "title": "Mild Glycemic Variance",
+    "actions": [
+      "If low (54-69 mg/dL), consume a 15 g carbohydrate snack pouch.",
+      "If elevated (100-125 mg/dL), review recent diet logs and ensure adequate hydration.",
+      "Verify glucometer strip code and re-test in 2 hours."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if persistent fasting glucose exceeds 120 mg/dL across three readings.",
+    "remeasureIntervalHours": 2,
+    "relatedBodyPartId": "liver",
+    "source": "CDC Clinical Guidelines",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "fastingGlucose-red",
+    "indicatorId": "fastingGlucose",
+    "level": "RED",
+    "levelLabel": "Contact Flight Surgeon",
+    "title": "Severe Glycemic Crisis (<54 or >=126 mg/dL)",
+    "actions": [
+      "If <54 mg/dL (severe hypoglycemia), ingest fast-acting glucose gel immediately.",
+      "If >=126 mg/dL, hydrate continuously with water and assess for ketones.",
+      "Have CMO verify capillary sample."
+    ],
+    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately for urgent metabolic review.",
+    "relatedBodyPartId": "liver",
+    "source": "CDC Low Blood Sugar & Diabetes Testing",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "sleepHours-green",
+    "indicatorId": "sleepHours",
+    "level": "GREEN",
+    "levelLabel": "Self-care",
+    "title": "Adequate Restorative Sleep",
+    "actions": [
+      "Logged sleep of 7+ hours meets the restorative target.",
+      "Keep circadian lighting dimmed 1 hour before sleep shift.",
+      "Ensure sleep station acoustic isolation earplugs are utilized."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if feeling chronically fatigued despite 7+ hours logged.",
+    "relatedBodyPartId": "brain",
+    "source": "CDC / NASA HRP Sleep Risk",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "sleepHours-yellow",
+    "indicatorId": "sleepHours",
+    "level": "YELLOW",
+    "levelLabel": "Monitor and apply countermeasures",
+    "title": "Sub-Target Sleep Warning (6-6.9h or single night <6h)",
+    "actions": [
+      "Schedule a 20-30 minute restorative nap before afternoon mission shift.",
+      "Limit caffeine rations during the 6 hours preceding the next sleep window.",
+      "Check sleep quarters ventilation and carbon dioxide scrubbing."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if sleep debt accumulates across consecutive days.",
+    "remeasureIntervalHours": 12,
+    "relatedBodyPartId": "brain",
+    "source": "CDC / Team Choice",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "sleepHours-red",
+    "indicatorId": "sleepHours",
+    "level": "RED",
+    "levelLabel": "Contact Flight Surgeon",
+    "title": "Chronic Sleep Deprivation (3 Consecutive Nights <6h)",
+    "actions": [
+      "Stand down from high-risk robotics, docking, and EVA operations.",
+      "Complete brief cognitive readiness assessment on station tablet.",
+      "Review sleep aid protocols (melatonin) with Flight Surgeon."
+    ],
+    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately: 3 nights under 6 hours triggers mandatory fatigue protocol.",
+    "relatedBodyPartId": "brain",
+    "source": "NASA HRP / Team Choice Rule",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "cabinCO2-green",
+    "indicatorId": "cabinCO2",
+    "level": "GREEN",
+    "levelLabel": "Self-care",
+    "title": "Nominal Cabin CO2 Level (<=3.0 mmHg)",
+    "actions": [
+      "Cabin CO2 <= 3.0 mmHg meets NASA-STD-3001 operational standards.",
+      "Maintain regular airflow scrubber inspections.",
+      "Report any localized air pocket stagnation in crew quarters."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if experiencing unexplained frontal headaches or visual disturbance.",
+    "relatedBodyPartId": "brain",
+    "source": "NASA-STD-3001 / OCHMO TB-004",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "cabinCO2-yellow",
+    "indicatorId": "cabinCO2",
+    "level": "YELLOW",
+    "levelLabel": "Monitor and apply countermeasures",
+    "title": "Elevated Cabin CO2 Warning (3.1-4.5 mmHg)",
+    "actions": [
+      "Inspect cabin air circulation fans and increase airflow mixing in crew quarters.",
+      "Verify Carbon Dioxide Removal Assembly (CDRA) telemetry status.",
+      "Monitor crew members for headache, irritability, or drowsiness.",
+      "Re-check cabin CO2 sensor in 1 hour."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if headache develops or cabin CO2 remains above 3.5 mmHg.",
+    "remeasureIntervalHours": 1,
+    "relatedBodyPartId": "brain",
+    "source": "NASA OCHMO TB-004",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "cabinCO2-red",
+    "indicatorId": "cabinCO2",
+    "level": "RED",
+    "levelLabel": "Contact Flight Surgeon",
+    "title": "Dangerous Hypercapnia Risk (>4.5 mmHg)",
+    "actions": [
+      "Switch life support to backup CO2 scrubbing beds immediately.",
+      "Don emergency breathing masks if symptoms of severe headache, nausea, or confusion occur.",
+      "Notify Capcom and Flight Surgeon console on primary Space-to-Ground loop."
+    ],
+    "whenToContactFlightSurgeon": "Contact Flight Surgeon and Mission Control immediately: Cabin CO2 > 4.5 mmHg impairs cognitive and operational flight safety.",
+    "relatedBodyPartId": "brain",
+    "source": "NASA-STD-3001 Vol 2 / OCHMO TB-004",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "radiationDose-green",
+    "indicatorId": "radiationDose",
+    "level": "GREEN",
+    "levelLabel": "Self-care",
+    "title": "Career Radiation Exposure Nominal (<300 mSv)",
+    "actions": [
+      "Career accumulated dose is within the safe lower tier (<300 mSv).",
+      "Wear personal dosimeter continuously during all flight duties.",
+      "Log daily incremental dosimeter readings during evening debrief."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if dosimeter alarms or unusual solar particle warnings sound.",
+    "relatedBodyPartId": "bone",
+    "source": "NASA OCHMO TB-020",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "radiationDose-yellow",
+    "indicatorId": "radiationDose",
+    "level": "YELLOW",
+    "levelLabel": "Monitor and apply countermeasures",
+    "title": "Career Radiation Advisory (300-599 mSv)",
+    "actions": [
+      "50% or more of career lifetime limit reached.",
+      "Prioritize time in well-shielded habitat modules (storm shelters).",
+      "Minimize scheduled extravehicular activities to critical maintenance only."
+    ],
+    "whenToContactFlightSurgeon": "Consult Flight Surgeon for career exposure pacing and mission dosimetric projection.",
+    "remeasureIntervalHours": 24,
+    "relatedBodyPartId": "bone",
+    "source": "NASA OCHMO TB-020 / Team Choice 50% Limit",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "radiationDose-red",
+    "indicatorId": "radiationDose",
+    "level": "RED",
+    "levelLabel": "Contact Flight Surgeon",
+    "title": "Career Radiation Limit Reached (>=600 mSv)",
+    "actions": [
+      "Cease all unshielded activities immediately and retreat to storm shelter.",
+      "Full dosimetric sensor calibration and blood lymphocyte count check.",
+      "Convene mandatory Flight Surgeon and Radiation Health Officer review."
+    ],
+    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately: Career dose >= 600 mSv triggers mandatory mission flight termination rules. Note: SPE limit is 250 mSv single event.",
+    "relatedBodyPartId": "bone",
+    "source": "NASA OCHMO TB-020 Career Limit",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "exerciseMinutes-green",
+    "indicatorId": "exerciseMinutes",
+    "level": "GREEN",
+    "levelLabel": "Self-care",
+    "title": "Exercise Countermeasure Complete (>=120 min)",
+    "actions": [
+      "Completed full 2.0-hour daily exercise countermeasure.",
+      "Maintain hydration and electrolyte recovery.",
+      "Preserves bone mineral density and cardiovascular capacity in zero-g."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if joint pain, muscle strain, or acute fatigue occurs during exercise.",
+    "relatedBodyPartId": "femur-left",
+    "source": "JAXA / NASA HRP Bone Remodeling Model",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "exerciseMinutes-yellow",
+    "indicatorId": "exerciseMinutes",
+    "level": "YELLOW",
+    "levelLabel": "Monitor and apply countermeasures",
+    "title": "Sub-Target Exercise Duration (60-119 min or single day <60 min)",
+    "actions": [
+      "Schedule a supplemental 30-minute cycle ergometer or ARED session tomorrow.",
+      "Perform active stretching in crew quarters.",
+      "Review daily task schedule to ensure 2 hours protected countermeasure time."
+    ],
+    "whenToContactFlightSurgeon": "Contact flight surgeon if physical pain or mission constraints prevent exercise.",
+    "remeasureIntervalHours": 24,
+    "relatedBodyPartId": "femur-left",
+    "source": "JAXA / Team Choice",
+    "reviewStatus": "REVIEWED"
+  },
+  {
+    "id": "exerciseMinutes-red",
+    "indicatorId": "exerciseMinutes",
+    "level": "RED",
+    "levelLabel": "Contact Flight Surgeon",
+    "title": "Severe Deconditioning Risk (2 Consecutive Days <60 min)",
+    "actions": [
+      "Immediately schedule mandatory countermeasure session.",
+      "Assess for musculoskeletal injury, illness, or equipment failure.",
+      "Consult Flight Surgeon and ASCR (Astronaut Strength, Conditioning, and Rehabilitation) coach."
+    ],
+    "whenToContactFlightSurgeon": "Contact Flight Surgeon immediately: Two days under 60 min triggers accelerated bone/muscle loss protocol.",
+    "relatedBodyPartId": "femur-left",
+    "source": "JAXA / NASA HRP / Team Choice",
+    "reviewStatus": "REVIEWED"
   }
 ]
-

@@ -184,22 +184,33 @@ export const HealthHistory: React.FC<HealthHistoryProps> = ({
                         />
                       </td>
                       <td className="py-3 px-3 text-slate-200">
-                        {record.results.heartRate.valueDisplay}
+                        {record.values.heartRate !== undefined ? `${record.values.heartRate}` : 'Not recorded'}
                       </td>
                       <td className="py-3 px-3 text-slate-200">
-                        {record.results.bloodPressure.valueDisplay}
+                        {(record.values.systolicBP ?? record.values.systolic) !== undefined &&
+                        (record.values.diastolicBP ?? record.values.diastolic) !== undefined
+                          ? `${record.values.systolicBP ?? record.values.systolic}/${record.values.diastolicBP ?? record.values.diastolic}`
+                          : 'Not recorded'}
                       </td>
                       <td className="py-3 px-3 text-slate-200">
-                        {record.results.bloodSugar.valueDisplay}
+                        {(record.values.fastingGlucose ?? record.values.bloodSugar) !== undefined
+                          ? `${record.values.fastingGlucose ?? record.values.bloodSugar}`
+                          : 'Not recorded'}
                       </td>
                       <td className="py-3 px-3 text-slate-200">
-                        {record.results.bodyTemperature.valueDisplay}°
+                        {record.values.bodyTemperature !== undefined
+                          ? `${record.values.bodyTemperature}°`
+                          : 'Not recorded'}
                       </td>
                       <td className="py-3 px-3 text-slate-200">
-                        {record.results.sleepDuration.valueDisplay}h
+                        {(record.values.sleepHours ?? record.values.sleepDuration) !== undefined
+                          ? `${record.values.sleepHours ?? record.values.sleepDuration}h`
+                          : 'Not recorded'}
                       </td>
                       <td className="py-3 px-3 text-slate-200">
-                        {record.values.mood}
+                        {typeof record.values.mood === 'number'
+                          ? `Score ${record.values.mood}`
+                          : record.values.mood}
                       </td>
                       <td className="py-3 px-3 text-right">
                         <button

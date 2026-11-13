@@ -41,15 +41,15 @@ export function getSeverityRank(status: HealthStatus): number {
  * @returns Sorted guidance items (urgent first) along with overall mission status and tally counters.
  */
 export function getGuidance(
-  indicators: IndicatorResult[] | Record<string, IndicatorResult> | undefined,
+  indicators: IndicatorResult[] | Record<string, IndicatorResult | undefined> | undefined,
   rules: GuidanceRule[]
 ): GuidanceEngineResult {
   // Normalize input into an array of IndicatorResult
   let indicatorList: IndicatorResult[] = [];
   if (Array.isArray(indicators)) {
-    indicatorList = indicators;
+    indicatorList = indicators.filter((ind): ind is IndicatorResult => ind !== undefined);
   } else if (indicators && typeof indicators === 'object') {
-    indicatorList = Object.values(indicators);
+    indicatorList = Object.values(indicators).filter((ind): ind is IndicatorResult => ind !== undefined);
   }
 
   // If no indicators supplied (e.g. before initial check-in), return nominal default

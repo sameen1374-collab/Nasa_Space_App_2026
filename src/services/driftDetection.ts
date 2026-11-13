@@ -98,7 +98,7 @@ export function analyzePhysiologicalDrift(
   const targetSleepPerSol = 8.0;
   let cumulativeDebt = 0;
   recent3.forEach((r) => {
-    const slept = Number(r.values.sleepDuration) || 0;
+    const slept = Number(r.values.sleepHours ?? r.values.sleepDuration) || 0;
     if (slept < targetSleepPerSol) {
       cumulativeDebt += (targetSleepPerSol - slept);
     }

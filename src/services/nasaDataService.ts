@@ -25,14 +25,19 @@ export interface NasaImportResult {
 export function importNasaHrpTelemetry(profile: AstronautProfile): NasaImportResult {
   const hrp = hrpEvidenceData;
   const newAssessments: DailyAssessmentRecord[] = hrp.sampleAstronautTelemetry.map((item, index) => {
+    const moodScore = item.mood === 'disoriented' ? 1 : item.mood === 'stressed' ? 2 : item.mood === 'fatigued' ? 3 : item.mood === 'good' ? 4 : 5;
     const parsedValues = {
       heartRate: item.heartRate,
+      systolicBP: item.systolic,
+      diastolicBP: item.diastolic,
+      fastingGlucose: item.bloodSugar,
+      bodyTemperature: item.bodyTemperature,
+      sleepHours: item.sleepDuration,
+      mood: moodScore,
       systolic: item.systolic,
       diastolic: item.diastolic,
       bloodSugar: item.bloodSugar,
-      bodyTemperature: item.bodyTemperature,
       sleepDuration: item.sleepDuration,
-      mood: item.mood as 'excellent' | 'good' | 'fatigued' | 'stressed' | 'disoriented',
       notes: `[NASA HRP UPLINK]: ${item.flightNotes}`,
     };
 

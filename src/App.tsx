@@ -36,7 +36,9 @@ export const App: React.FC = () => {
     setRecords(getStoredAssessments());
   }, []);
 
-  const latestAssessment = records.length > 0 ? records[0] : undefined;
+  // Determine latest assessment: prioritize actual astronaut check-in records over demo seed records
+  const realRecords = records.filter((r) => !r.isDemonstrationData);
+  const latestAssessment = realRecords.length > 0 ? realRecords[0] : (records.length > 0 ? records[0] : undefined);
   const isCompletedToday = hasCompletedTodayAssessment(profile.currentMissionDay);
 
   // Handle new daily assessment submission
